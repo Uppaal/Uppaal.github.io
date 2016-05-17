@@ -16,11 +16,8 @@ nav ul li, footer ul li {
     margin-right: 20px;
 }
 
-ul {
+ul, li {
 	font-family:'Helvetica', 'Arial', 'Sans-Serif';
-}
-li {
-	shape: "square"
 }
 
 a {								<!-- links -->
@@ -67,7 +64,7 @@ table, th, td {
     border: 1px solid gray;
 }
 th, td {
-    padding: 15px;
+    padding: 9px;
 	height: 30px;
 	width: 50%;
 }
