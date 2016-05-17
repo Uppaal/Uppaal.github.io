@@ -3,12 +3,12 @@ body {
     width: 70%;
 	background-image: url("tile.jpg");
 	font-family:'Helvetica', 'Arial', 'Sans-Serif';
-	font-size: 1.5em;
-    line-height: 1.4em;
+	font-size: 1em;
+    line-height: 0.9em;
     color: #333;
 }
-h1 {    font-size: 2em; }
-h2 {	font-size: 1.8em }
+h1 {    font-size: 1.5em; }
+h2 {	font-size: 1.2em }
 
 
 img {    padding: 0px 20px 10px 0px; }
