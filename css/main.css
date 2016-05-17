@@ -1,7 +1,8 @@
 body {
     margin: 60px auto;
     width: 70%;
-	
+	background-image: url("Images/paper.jpg");
+	background-repeat: no-repeat;
 }
 
 nav ul, footer ul {				
@@ -67,7 +68,7 @@ table, th, td {
 }
 th, td {
     padding: 15px;
-	height: 50px;
+	height: 30px;
 }
 th {
     background-color: darkgray;
