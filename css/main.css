@@ -59,5 +59,16 @@ ul.posts li {
 }
 
 table {
-	
+	border-collapse: collapse;
+	width: 100%;
 }
+table, th, td {
+    border: 1px solid gray;
+}
+th, td {
+    padding: 15px;
+}
+th {
+    background-color: darkgray;
+}
+tr:nth-child(even){background-color: #f2f2f2}
