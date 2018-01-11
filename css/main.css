@@ -1,7 +1,7 @@
 body {
     margin: 60px auto;
     width: 70%;
-	background-image: url("tile.jpg");
+	background-image: url("paper.jpg");
 	font-family:'Helvetica', 'Arial', 'Sans-Serif';
 	font-size: 1.3em;
     line-height: 1.2em;
@@ -11,7 +11,7 @@ h1 {    font-size: 1.7em; }
 h2 {	font-size: 1.2em }
 
 
-img {    padding: 0px 20px 10px 0px; }
+img {    padding: 10px 20px 20px 10px; }
 a {								
     text-decoration: none;
     color: #999;
