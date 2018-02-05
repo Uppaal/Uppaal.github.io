@@ -2,12 +2,12 @@ body {
     margin: 60px auto;
     width: 70%;
 	font-family:'Helvetica', 'Arial', 'Sans-Serif';
-	font-size: 1.2em;
+	font-size: 1.3em;
     line-height: 1.2em;
     color: #777;
 }
-h1 {    font-size: 1.6em; color:#800 }
-h2 {	font-size: 1.1em; color:#800 }
+h1 {    font-size: 1.7em; color:#800 }
+h2 {	font-size: 1.2em; color:#800 }
 
 
 img {    padding: 10px 10px 20px 10px; }
@@ -49,4 +49,4 @@ th, td {
 	height: 15px;
 	width: 50%;
 }
-th {    background-color: #800; }
+th {    background-color: #800; color: #000}
