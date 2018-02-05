@@ -2,12 +2,12 @@ body {
     margin: 60px auto;
     width: 70%;
 	font-family:'Helvetica', 'Arial', 'Sans-Serif';
-	font-size: 1.3em;
+	font-size: 1.2em;
     line-height: 1.2em;
     color: #777;
 }
-h1 {    font-size: 1.7em; }
-h2 {	font-size: 1.2em }
+h1 {    font-size: 1.6em; color:#800 }
+h2 {	font-size: 1.1em; color:#800 }
 
 
 img {    padding: 10px 10px 20px 10px; }
@@ -16,7 +16,7 @@ a {
     color: #800;
 }
 a:hover {    text-decoration: underline; }
-h {color:#888}
+h {color:#800}
 
 nav ul, footer ul {				
     padding: 0px;
