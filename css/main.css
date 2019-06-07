@@ -6,18 +6,20 @@ body {
     line-height: 1.2em;
     color: #777;
 }
-h1 {    font-size: 1.3em; color:#006400 }
-h2 {	font-size: 1.1em; color:#006400 }
 
+h1 {    font-size: 1.4em; color:#006400 }
+h2 {	font-size: 1.2em; color:#006400 }
+h3 {	font-size: 1.1em; color:#006400 }
+h {color:#006400}
 
 img { padding-top: 10px; padding-bottom: 10px; padding-left: 0px; padding-right: 0px }
+p {padding-right: 300px}
+
 a {								
     text-decoration: none;
     color: #006400;
 }
 a:hover {    text-decoration: underline; }
-h {color:#006400}
-p {padding-right: 30px}
 
 nav ul, footer ul {				
     padding: 0px;
@@ -28,11 +30,13 @@ nav ul li, footer ul li {
     display: inline;
     margin-right: 20px;
 }
+
 footer {
     border-top: 1px solid #d5d5d5;
     font-size: 0.9em;
     color: #777
 }
+
 ul.posts { 
     margin: 20px auto 40px; 
     font-size: 1.2em;
