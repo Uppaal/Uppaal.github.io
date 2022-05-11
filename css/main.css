@@ -34,16 +34,16 @@ h1 {font-size: 1.5em; color: var(--heading-color); font-family: Helvetica, Arial
 h2 {font-size: 1.2em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif}
 h3 {font-size: 1em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif}
 
-img { padding-top: 10px; padding-bottom: 10px; padding-left: 0; padding-right: 0 }
+img {padding-top: 10px; padding-bottom: 10px; padding-left: 0; padding-right: 0 }
 
 p {padding-right: 250px; text-align: justify;}
 
 a {text-decoration: none; color: var(--link-color)}
 a:hover {text-decoration: underline}
 
+nav {border-bottom: 1px solid #d5d5d5; line-height:0; font-family: Helvetica, Arial, sans-serif}
 nav ul, footer ul {padding: 0; list-style: none; font-weight: bold}
 nav ul li, footer ul li {display: inline; margin-right: 20px}
-nav {border-bottom: 1px solid #d5d5d5; line-height:0; font-family: Helvetica, Arial, sans-serif}
 ul.posts {margin: 20px auto 40px; font-size: 1.2em}
 ul.posts li {list-style: none; padding:3px}
 
