@@ -1,54 +1,47 @@
+/*Dark Red - #8B0000 - UW Madison colour; Good for headings, avg for links*/
+/*Dark Magenta - #8B008B - OK for headings, bad for links*/
+/*Dark green - #006400 - Good for headings, bad for links*/
+/*Dark Blue - #00008B - OK for headings, bad for links*/
+
+/*Dark Goldenrod - #B8860B*/
+/*Goldenrod - #DAA520*/
+
+:root {
+    --main-bg-color: white;
+    --heading-color: #8B0000;
+    --link-color: #B8860B;
+    --font-color: #444;  /*111 is darkest black and 999 is lightest*/
+    --footer-font-color:#777
+}
+
 body {
     margin: 60px auto;
     width: 70%;
-	font-family:'Helvetica', 'Arial', 'Sans-Serif';
+    font-family: Helvetica, Arial, sans-serif;
 	font-size: 1em;
     line-height: 1.2em;
-    color: #777;
+    color: var(--font-color);
 }
 
+div{display:inline-block}
 
-/*Dark green - #006400*/
-/*Violet - #8A2BE2*/
-/*Brown - #A52A2A*/
-/*Crimson - #DC143C*/
-/*Dark Goldenrod - #B8860B*/
-/*Goldenrod - #DAA520*/
-/*Dark Blue - #00008B*/
-/*Dark Magenta - #8B008B*/
-/*Dark Red - #8B0000*/
-/*Dark Slate Blue - #483D8B*/
+.heading{color: var(--heading-color) !important;}
 
-h1 {font-size: 1.4em; color:#483D8B}
-h2 {font-size: 1.2em; color:#483D8B}
-h3 {font-size: 1em; color:#483D8B}
+footer {border-top: 1px solid #d5d5d5; font-size: 0.9em; color: var(--footer-font-color)}
+
+h1 {font-size: 1.4em; color: var(--heading-color)}
+h2 {font-size: 1.2em; color: var(--heading-color)}
+h3 {font-size: 1em; color: var(--heading-color)}
 
 img { padding-top: 10px; padding-bottom: 10px; padding-left: 0; padding-right: 0 }
+
 p {padding-right: 250px; text-align: justify;}
 
-a {								
-    text-decoration: none;
-    color: #B8860B;
-}
+a {text-decoration: none; color: var(--link-color)}
 a:hover {text-decoration: underline}
 
-
-nav ul, footer ul {				
-    padding: 0;
-    list-style: none;
-    font-weight: bold;
-}
-nav ul li, footer ul li {		
-    display: inline;
-    margin-right: 20px;
-}
-
-footer {
-    border-top: 1px solid #d5d5d5;
-    font-size: 0.9em;
-    color: #777
-}
-
+nav ul, footer ul {padding: 0; list-style: none; font-weight: bold}
+nav ul li, footer ul li {display: inline; margin-right: 20px}
 ul.posts {margin: 20px auto 40px; font-size: 1.2em}
 ul.posts li {list-style: none; padding:3px}
 
