@@ -10,17 +10,18 @@
     --main-bg-color: white;
     --heading-color: #B8860B;
     --link-color: #B8860B;
-    --font-color: #444;  /*111 is darkest black and 999 is lightest*/
+    --font-color: #111;  /*111 is darkest black and 999 is lightest*/
     --footer-font-color:#777
 }
 
 body {
     margin: 60px auto;
     width: 70%;
-    font-family: Helvetica, Arial, sans-serif;
+    font-family: Calibri, Helvetica, Arial, sans-serif;
 	font-size: 1em;
     line-height: 1.2em;
     color: var(--font-color);
+    background-color: var(--main-bg-color);
 }
 
 div{display:inline-block}
