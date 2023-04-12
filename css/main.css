@@ -39,8 +39,8 @@ img {padding-top: 10px; padding-bottom: 10px; padding-left: 0; padding-right: 0 
 /*p {padding-right: 250px; text-align: justify;}*/
 p {text-align: justify;}
 
-a {text-decoration: none; color: var(--link-color)}
-a:hover {text-decoration: underline}
+a {text-decoration: underline; color: var(--link-color)}
+a:hover {text-decoration: none}
 
 nav {border-bottom: 1px solid #d5d5d5; line-height:0; font-family: Helvetica, Arial, sans-serif}
 nav ul, footer ul {padding: 0; list-style: none; font-weight: bold}
