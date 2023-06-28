@@ -8,8 +8,8 @@
 
 :root {
     --main-bg-color: #FFFFFF; /*white*/
-    --heading-color: #6A33FF;
-    --link-color: #6A33FF;
+    --heading-color: #997DE2;
+    --link-color: #997DE2;
     --font-color: #111;  /*111 is darkest black and 999 is lightest*/
     --footer-font-color:#777
 }
