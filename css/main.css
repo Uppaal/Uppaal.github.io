@@ -26,9 +26,9 @@ body {
 
 div{display:inline-block}
 
-a {text-decoration: none; color: var(--link-color)}
-a:hover {text-decoration: underline}
-
+.heading-link {
+  color: var(--heading-color) !important;
+}
 .heading{color: var(--heading-color) !important;}
 
 footer {border-top: 1px solid #d5d5d5; font-size: 0.9em; color: var(--footer-font-color)}
@@ -41,6 +41,9 @@ img {padding-top: 10px; padding-bottom: 10px; padding-left: 0; padding-right: 0 
 
 /*p {padding-right: 250px; text-align: justify;}*/
 p {text-align: justify;}
+
+a {text-decoration: none; color: var(--link-color)}
+a:hover {text-decoration: underline}
 
 li{ margin: 17px 0;}
 
