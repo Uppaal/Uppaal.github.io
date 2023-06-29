@@ -6,6 +6,10 @@
 /*Dark Goldenrod - #B8860B*/
 /*Goldenrod - #DAA520*/
 
+.heading-link {
+  color: var(--heading-color) !important;
+}
+
 :root {
     --main-bg-color: #FFFFFF; /*white*/
     --heading-color: #006400;
@@ -26,9 +30,6 @@ body {
 
 div{display:inline-block}
 
-.heading-link {
-  color: var(--heading-color) !important;
-}
 .heading{color: var(--heading-color) !important;}
 
 footer {border-top: 1px solid #d5d5d5; font-size: 0.9em; color: var(--footer-font-color)}
