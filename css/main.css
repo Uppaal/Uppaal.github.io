@@ -31,6 +31,9 @@ body {
 div{display:inline-block}
 
 .heading{color: var(--heading-color) !important;}
+.heading-link {
+  color: var(--heading-color) !important; /* Use the heading color for these words */
+}
 
 footer {border-top: 1px solid #d5d5d5; font-size: 0.9em; color: var(--footer-font-color)}
 
