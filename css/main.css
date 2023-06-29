@@ -14,7 +14,7 @@
 :root {
     --main-bg-color: #FFFFFF; /*white*/
     --heading-color: #006400;
-    --link-color: #008000;
+    --link-color: #DAA520;
     --font-color: #111;  /*111 is darkest black and 999 is lightest*/
     --footer-font-color:#777
 }
