@@ -6,10 +6,6 @@
 /*Dark Goldenrod - #B8860B*/
 /*Goldenrod - #DAA520*/
 
-.heading-link {
-  color: var(--heading-color) !important;
-}
-
 .heading-line a {
   color: var(--heading-color) !important;
 }
