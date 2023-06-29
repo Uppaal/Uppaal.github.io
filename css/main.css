@@ -1,6 +1,7 @@
 /*Dark Red - #8B0000 - UW Madison colour; Good for headings, avg for links*/
 /*Dark Magenta - #8B008B - OK for headings, bad for links*/
 /*Dark green - #006400 - Good for headings, bad for links*/
+/* Lighter, brighter green for links: 289c28 */
 /*Dark Blue - #00008B - OK for headings, bad for links*/
 
 /*Dark Goldenrod - #B8860B*/
@@ -14,7 +15,7 @@
 :root {
     --main-bg-color: #FFFFFF; /*white*/
     --heading-color: #006400;
-    --link-color: #DAA520;
+    --link-color: #289c28;
     --font-color: #111;  /*111 is darkest black and 999 is lightest*/
     --footer-font-color:#777
 }
@@ -30,11 +31,6 @@ body {
 }
 
 div{display:inline-block}
-
-.heading{color: var(--heading-color) !important;}
-.heading-link {
-  color: var(--heading-color) !important; /* Use the heading color for these words */
-}
 
 footer {border-top: 1px solid #d5d5d5; font-size: 0.9em; color: var(--footer-font-color)}
 
