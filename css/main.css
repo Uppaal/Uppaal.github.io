@@ -58,3 +58,7 @@ table {border-collapse: collapse; width: 100%;}
 table, th, td {    border: 1px solid gray; }
 th, td {padding: 3px; height: 15px; width: 50%}
 th {background-color: #006400; color: #FFF}
+
+@media (max-width: 768px) {
+    /* Mobile styles here */
+}
