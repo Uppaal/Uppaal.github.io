@@ -36,7 +36,7 @@ footer {border-top: 1px solid #d5d5d5; font-size: 0.9em; color: var(--footer-fon
 
 h1 {font-size: 1.5em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif}
 h2 {font-size: 1.2em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif}
-h3 {font-size: 1em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif}
+h3 {font-size: 1.1em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif}
 
 img {padding-top: 10px; padding-bottom: 10px; padding-left: 0; padding-right: 0 }
 
@@ -44,7 +44,7 @@ img {padding-top: 10px; padding-bottom: 10px; padding-left: 0; padding-right: 0 
 p {text-align: justify;}
 
 a {text-decoration: none; color: var(--link-color)}
-a:hover {text-decoration: underline}
+a:hover {text-decoration: underline; color: var(--heading-color)}
 
 li{ margin: 17px 0;}
 
@@ -61,20 +61,11 @@ th {background-color: #006400; color: #FFF}
 
 @media (max-width: 768px) {
     /* Mobile styles here */
-nav ul {
+.heading-line nav ul {
         display: block; /* Change to a block element for stacking */
     }
 
-    nav li {
-        margin-right: 0; /* Remove the right margin for stacking */
-        margin-bottom: 5px; /* Add some space between stacked list items */
-    }
-
-.heading-line ul {
-        display: block; /* Change to a block element for stacking */
-    }
-
-.heading-line li  {
+.heading-line nav li  {
         margin-right: 0; /* Remove the right margin for stacking */
         margin-bottom: 5px; /* Add some space between stacked list items */
     }
