@@ -23,7 +23,7 @@
 body {
     margin: 60px auto;
     width: 70%;
-    font-family: Calibri, Helvetica, Arial, sans-serif;
+    font-family: Arial, Calibri, Helvetica, sans-serif;
 	font-size: 1em;
     line-height: 1.2em;
     color: var(--font-color);
@@ -61,12 +61,12 @@ th {background-color: #006400; color: #FFF}
 
 @media (max-width: 768px) {
     /* Mobile styles here */
-.heading-line nav ul {
-        display: block; /* Change to a block element for stacking */
+    .heading-line nav ul {
+        flex-direction: column; /* Stack items vertically */
     }
 
-.heading-line nav li  {
-        margin-right: 0; /* Remove the right margin for stacking */
-        margin-bottom: 5px; /* Add some space between stacked list items */
+    .heading-line nav li {
+        margin-right: 0;
+        margin-bottom: 10px; /* Add space between stacked list items */
     }
 }
