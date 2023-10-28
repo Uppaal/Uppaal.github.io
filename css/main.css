@@ -69,4 +69,13 @@ nav ul {
         margin-right: 0; /* Remove the right margin for stacking */
         margin-bottom: 5px; /* Add some space between stacked list items */
     }
+
+.heading-line ul {
+        display: block; /* Change to a block element for stacking */
+    }
+
+.heading-line li  {
+        margin-right: 0; /* Remove the right margin for stacking */
+        margin-bottom: 5px; /* Add some space between stacked list items */
+    }
 }
