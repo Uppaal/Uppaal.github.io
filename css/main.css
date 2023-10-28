@@ -61,4 +61,12 @@ th {background-color: #006400; color: #FFF}
 
 @media (max-width: 768px) {
     /* Mobile styles here */
+nav ul {
+        display: block; /* Change to a block element for stacking */
+    }
+
+    nav li {
+        margin-right: 0; /* Remove the right margin for stacking */
+        margin-bottom: 5px; /* Add some space between stacked list items */
+    }
 }
