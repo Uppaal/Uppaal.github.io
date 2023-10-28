@@ -25,7 +25,7 @@ body {
     width: 70%;
     font-family: Arial, Calibri, Helvetica, sans-serif;
 	font-size: 1em;
-    line-height: 1.2em;
+    line-height: 1.5em;
     color: var(--font-color);
     background-color: var(--main-bg-color);
 }
@@ -34,9 +34,9 @@ div{display:inline-block}
 
 footer {border-top: 1px solid #d5d5d5; font-size: 0.9em; color: var(--footer-font-color)}
 
-h1 {font-size: 1.5em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif}
-h2 {font-size: 1.2em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif}
-h3 {font-size: 1.1em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif}
+h1 {font-size: 1.5em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif; padding:5px}
+h2 {font-size: 1.2em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif; padding:5px}
+h3 {font-size: 1.1em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif; padding:5px}
 
 img {padding-top: 10px; padding-bottom: 10px; padding-left: 0; padding-right: 0 }
 
@@ -62,11 +62,11 @@ th {background-color: #006400; color: #FFF}
 @media (max-width: 768px) {
     /* Mobile styles here */
     .heading-line nav ul {
-        flex-direction: column; /* Stack items vertically */
+        flex-direction: column !important; /* Stack items vertically */
     }
 
     .heading-line nav li {
-        margin-right: 0;
-        margin-bottom: 10px; /* Add space between stacked list items */
+        margin-right: 0 !important;
+        margin-bottom: 10px !important; /* Add space between stacked list items */
     }
 }
