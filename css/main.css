@@ -64,6 +64,11 @@ table, th, td {    border: 1px solid gray; }
 th, td {padding: 3px; height: 15px; width: 50%}
 th {background-color: #006400; color: #FFF}
 
+/* For the what's new section on the home page*/
+.whats-new li {
+    margin: 5px 0; 
+}
+
 @media (max-width: 768px) {
     /* Mobile styles here */
     .heading-line nav ul {
