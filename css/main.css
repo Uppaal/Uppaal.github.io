@@ -55,11 +55,30 @@ th {background-color: #006400; color: #FFF}
 .whats-new li {margin: 5px 0; }
 .whats-new-heading {font-size: 1.1em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif; padding-top:15px; margin-bottom: 0px; }
 
-/* Mobile styles here */
+/* /* Mobile styles here */
 @media (max-width: 768px) {
     .heading-line nav ul {flex-direction: column !important;} /* Stack items vertically */
     .heading-line nav li {margin-right: 0 !important; margin-bottom: 10px !important;} /* Add space between stacked list items */
 
     .heading-line {font-size: 1.5em !important;} /* Adjust font sizes for smaller screens */
     footer {font-size: 1em;} /* Adjust footer font size for mobile */
+}
+ */
+/* Mobile styles here */
+@media (max-width: 768px) {
+    .heading-line {
+        font-size: 1.3em !important;
+    }
+
+    .heading-line nav ul li {
+        font-size: 1.3em !important;
+    }
+
+    footer {
+        font-size: 1.1em; /* Adjust footer font size for mobile */
+    }
+
+    footer ul {
+        font-size: 1.1em; /* Adjust footer list font size for mobile */
+    }
 }
