@@ -64,8 +64,9 @@ th, td {padding: 3px; height: 15px; width: 50%}
 th {background-color: #006400; color: #FFF}
 
 /* For the what's new section on the home page*/
+.whats-new {margin-top: 0px; }
 .whats-new li {margin: 5px 0; }
-.whats-new h4 {font-size: 1.1em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif; padding-top:15px; margin-bottom: 5px; }
+.whats-new-heading {font-size: 1.1em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif; padding-top:15px; margin-bottom: 0px; }
 
 @media (max-width: 768px) {
     /* Mobile styles here */
