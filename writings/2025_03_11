@@ -1,0 +1,35 @@
+---
+layout: default
+title: Today
+---
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-8P4M88PV5K"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-8P4M88PV5K');
+</script>
+
+<div class="blurb">
+	<h2><i>{{ page.title }}</i></h2>
+
+  <p>&emsp;&emsp;&emsp;<i>I spent my final years of elementary schooling living a unique life in the foothills of the Himalayas. My school flanked a military airport, and the roar of fighter jets taking off from a runway less than half a kilometre away was a frequent occurrence. At first, each sonic boom startled me, but I soon realized I was the only one who seemed to notice. Teachers and students carried on their conversations unfazed, as if the deafening noise were nothing more than the dropping of a pin.</i></p>
+
+  <p>&emsp;&emsp;&emsp;<i>Our school was tiny, a simple collection of dilapidated sheds patched and thatched up to house hosts of wide eyes, both young in curiosity and ancient in seeing unseeable things.</i></p>
+  
+  <p>&emsp;&emsp;&emsp;<i>The day we learnt that Parinidhi’s father had been killed in action, and that she had been pulled out of the school, many of us cried. The teacher had to bang her stick on the worn desk to calm us down, leaving a small dent where her stick struck the old wooden surface. Years later, with the buildings abandoned in favour of a more permanent structure elsewhere, I imagine that desk would still be right there, the teacher’s dent smothered away by frigid winds and bits of ice that clattered through the now broken windows. The tear stains would be gone.</i></p>
+
+  <p>&emsp;&emsp;&emsp;<i>Past the windows lay our class’s beautiful flowerbed. We were tasked with planting “whatever we liked”, and that somehow ended up entailing in us stealing sunflowers from somewhere off the school premises. A convincing student stated that sunflowers made dramatic turns to match the sun’s dramatic motions, and that even its petals could be dug into the earth to seed new life. And so, it was decided. For weeks, we watered and overwatered the flowerbed, wondering when our twisting and turning sunflowers would rise. Maybe now, without the persistent “assistance” of endless eight-year-olds, the sunflowers may have finally risen? Rising to the sun’s warmth and peaceful solitude away from humanity.</i></p>
+
+  <p>&emsp;&emsp;&emsp;<i>While we all loved summer months, winter was a memorable affair. With no form of heating, our mothers would bundle us up in layer after layer, until we were round enough to roll and roll away if we ever fell. We would excitedly jump to what sounded like gunshots as the snow and hail pelted the aluminium sheet roofs. If it was windy, some of the snow would even sneak through a crevice under the roof, or a crack in the window, and fall on someone’s notebook, giving them an excuse for why they didn’t do well on a test. Those aluminium sheets would still be there today, more rusted and holey than ever. There would be a large hole in one of the window’s glass panes and a stone lying right in its trajectory. The classroom would be damper than ever. An abandoned muffler would lie in the drawer of a student’s desk, slightly warmer and dryer than the unlucky chalkboard.</i></p>
+
+  <p>&emsp;&emsp;&emsp;<i>We had an abandoned building in our school even back then – one of the dilapidated shacks, which was left dilapidated because we did not have enough students to need the space. We would occasionally sneak into the building during lunch break and play hike-and-seek. I imagine that building would still look the same to this day. A broken lightbulb centred small glass shrapnel no one ever bothered to clean up. (Or maybe the adults, like us, simply found it pretty and never touched it?) The walls were always a sight to behold – one would showcase peeling yellowed paint, two were never even painted and showed the grainy texture of cement and brick melding, and one wall had what looked like a large hole. It might have been the makings of a window, or the breakings of the building – who knows?</i></p>
+
+  <p>&emsp;&emsp;&emsp;<i>On the opposite end of the school, a short bushy tree grew by the ground where we held morning assembly. This was the nicest part of the school – the concrete on the ground felt smooth through my shoes as I would surreptitiously swipe around my foot at the back of the line. The shrubby tree was also a landmark – we were forbidden from touching it, and groups of students would crowd around an invisible line encompassing the tree. Some would tentatively swipe their hands many feet away from the tree, as if their motions would magically draw the tree’s berries to them. “They may be poisonous,” was the main reason no one would venture forth. I recall being sick of all the guessing and purposefully striding forward towards the tree – only to be pulled back by a strong force which would turn out to be my crying friend. If I had eaten the berries that day, would I today be one with the tree, skeletal remains in the school and memories in the remains of my classmates’ minds?</i></p>
+
+  <p>&emsp;&emsp;&emsp;<i>That did happen to one of my classmates, unfortunately. I hit him on the head with his notebook one day, for no memorable reason. We heard of his death a few weeks later - our principal announcing to the school that he and his family had been killed in a bomb blast on their way to a religious pilgrimage. A basket was passed around the school the next day, to collect flowers to send to my classmate’s remaining family. My mother gave me a beautiful white flower to add to the basket that day. I wish I could have sent a “sorry” instead. That basket may be lying in a pile of garbage somewhere today, the flowers long gone from existence. Even thoughts of my classmate would fade away from most of our minds until random moments like this, when we would wonder if our apologies and regrets may have carried across the winds of time, perhaps eventually reaching the heavenly ear they were destined for.</i></p>
+  
+</div>
