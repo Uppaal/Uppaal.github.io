@@ -56,6 +56,7 @@ th {background-color: #006400; color: #FFF}
 .whats-new-heading {font-size: 1.1em; color: var(--heading-color); font-family: Helvetica, Arial, sans-serif; padding-top:15px; margin-bottom: 0px; }
 
 .story-paragraph {text-indent: 3em; font-style: italic;  margin: 0.5em 0.5;}
+.story-paragraph em {font-style: normal;}
 
 /* /* Mobile styles here */
 @media (max-width: 768px) {
