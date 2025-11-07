@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+  <title>Model Editing as a Robust and Denoised variant of DPO</title>
+
+  <style>
+    :root {
+      --heading-color: #006400;
+      --link-color: #01a049;
+      --font-color: #111;
+      --bg-color: #fff;
+      --banner-bg: #f5f5f5;
+      --footer-color: #777;
+      --tldr-accent: var(--heading-color);
+    --tldr-border: var(--heading-color);
+    --tldr-bg: #f9fff9;
+    --tldr-text: var(--font-color);
+    }
+    body {
+      font-family: Arial, Calibri, Helvetica, sans-serif;
+      color: var(--font-color);
+      background-color: var(--bg-color);
+      max-width: 900px;
+      margin: 0 auto 60px auto;
+      padding: 0 40px;
+      line-height: 1.9em;
+    }
+
+    .paper-header {background-color: var(--banner-bg); width: 100vw; position: relative; padding: 50px 0 40px 0;
+      left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; border-bottom: 1px solid #ddd;}
+    .header-inner {max-width: 1100px; margin: 0 auto; text-align: center; padding: 0 20px;}
+    .paper-header h1 {font-size: 2.2em; font-weight: 700; margin-bottom: 0.4em; color: var(--heading-color); line-height: 1.25;}
+    .subtitle {font-size: 1.1em; color: #333; margin-bottom: 1.2em; font-weight: 500;}
+    .authors {font-size: 1em;line-height: 1.5;color: var(--heading-color);}
+    .authors span {color: #555;}
+    .affiliations {font-size: 1em; color: #555; margin-top: 0.8em;}
+    .affiliations span {margin: 0 10px;}
+
+    .button-group {margin-top: 1.5em;}
+    .button {display: inline-flex; align-items: center; gap: 10px; background-color: #333; color: #fff;
+      border-radius: 40px; padding: 10px 20px; font-size: 1em; text-decoration: none; transition: background 0.2s ease;}
+    .button svg {width: 22px; height: 22px; flex-shrink: 0;}
+    .button-arxiv:hover { background-color: #B31B1B; color: #FFFFFF}
+    .button-github:hover { background-color: #000000; color: #FFFFFF}
+    .button-huggingface:hover { background-color: #f1c232; color: #FFFFFF}
+    .button-twitter:hover { background-color: #1DA1F2; color: #FFFFFF}
+
+    h2 {font-family: Helvetica, Arial, sans-serif; color: var(--heading-color); border-bottom: 1px solid #ddd;
+        padding-bottom: 0.3em; margin-top: 2em; font-size: 1.4em;}
+    h3 {color: var(--heading-color); font-size: 1.1em;}
+    .detail-heading {color: var(--heading-color); font-size: 1.1em;}
+
+    a {text-decoration: none; color: var(--link-color);}
+    a:hover {text-decoration: underline; color: var(--heading-color);}
+
+    figure {margin: 2em auto; text-align: center;}
+    figure img {display: block; max-width: 100%; border-radius: 6px; margin: 0 auto;}
+    figcaption {font-size: 0.9em; color: #555; margin-top: 0.6em; font-style: italic;}
+
+    footer {margin-top: 3em; text-align: center; font-size: 0.9em; color: var(--footer-color);
+      border-top: 1px solid #d5d5d5; padding-top: 1.2em;}
+
+    @media (max-width: 768px) {
+      body { width: 90%; margin: 40px auto; font-size: 1.05em; padding: 0 20px; }
+      .paper-header { padding: 25px 0; }
+      .paper-header h1 { font-size: 1.7em; }
+    }
+
+    .abstract {background: #f9f9f9; border-left: 4px solid var(--heading-color); padding: 1em 1.5em; margin: 2em 0; font-style: italic;}
+    .tldr-box {font-family: inherit; color: var(--tldr-text); background: var(--tldr-bg); overflow: hidden;
+      border: 2px solid var(--tldr-border); border-radius: 8px; margin: 2em 1em; box-shadow: 0 3px 10px rgba(0, 100, 0, 0.08);}
+    .tldr-ribbon {background: var(--heading-color); color: #fff; font-weight: 549; font-size: 1em; line-height: 0.9em;
+      padding: 0.6em 1em; display: flex; align-items: center; gap: 0.65em; letter-spacing: 0.3px;}
+    .tldr-ribbon svg {width: 1em; height: 1em; stroke: currentColor; flex-shrink: 0;}
+    .tldr-content {padding: 1.2em 1.5em 1.4em; background: #fbfffb;}
+    .tldr-list li {margin: 0.25rem 0;}
+
+    #toc-container {background: #f9fff9; border: 1px solid var(--heading-color); border-radius: 8px; padding: 1em 1.5em; margin: 2em 0; box-shadow: 0 2px 6px rgba(0, 100, 0, 0.08);}
+    #toc-container h2 {border: none; margin-top: 0; font-size: 1.2em;}
+    #toc {list-style: none; margin: 0; padding: 0;}
+    #toc li {margin: 0.3em 0;}
+    #toc a {color: var(--link-color); text-decoration: none;}
+    #toc a:hover {text-decoration: underline; color: var(--heading-color);}
+    #toc li.toc-h3 {margin-left: 1.2em; font-size: 0.95em;}
+    #toc li.collapsible {cursor: pointer; position: relative;}
+    #toc li.collapsible::before {content: "▶"; position: absolute; left: -1.2em; color: var(--heading-color); transition: transform 0.2s ease;}
+    #toc li.collapsible.open::before {transform: rotate(90deg);}
+    .toc-sublist {margin-left: 1.2em; padding-left: 0.5em; border-left: 1px dotted #ccc;}
+  </style>
+</head>
+
+<body>
+  <div class="paper-header">
+    <div class="header-inner">
+      <h1>Model Editing as a Robust and Denoised variant of DPO: A Case Study on Toxicity</h1>
+      <div class="authors">
+        <span>Rheeya Uppaal<sup>1</sup></span>, <span>Apratim Dey<sup>2</sup></span>, <span>Yiting He<sup>3</sup></span>,
+        <span>Yiqiao Zhong<sup>1</sup></span>, <span>Junjie Hu<sup>1</sup></span>
+      </div>
+        <div class="affiliations">
+          <span><sup>1</sup>University of Wisconsin-Madison</span>
+          <span><sup>2</sup>Stanford University</span>
+          <span><sup>3</sup>University of Science and Technology of China</span>
+        </div>
+        <p></p>
+        <div class="subtitle"><strong>ICLR 2025</strong></div>
+
+         <div class="button-group">
+              <a class="button button-arxiv" href="https://arxiv.org/abs/2405.13967" aria-label="Read the paper on arXiv">
+                  <img class="icon icon-arxiv" src="arxiv-logo.svg" alt="" width="30" height="30" loading="lazy" decoding="async">
+                  <span>arXiv</span>
+              </a>
+              <a class="button button-github" href="https://github.com/Uppaal/detox-edit" aria-label="View the code on GitHub">
+                  <img class="icon icon-github" src="github-logo.svg" alt="" width="30" height="30" loading="lazy" decoding="async">
+                  <span>Code</span>
+              </a>
+              <a class="button button-huggingface" href="https://huggingface.co/collections/Uppaal/profs" aria-label="Download the checkpoints from HugginFace">
+                  <img class="icon icon-hf" src="hf-logo.svg" alt="" width="30" height="30" loading="lazy" decoding="async">
+                  <span>Checkpoints</span>
+              </a>
+              <a class="button button-twitter" href="https://x.com/RUppaal/status/1883732764933214296?t=n921e-vlgoXqptkc7dafug&s=19" aria-label="Get the excerpt on Twitter">
+                  <img class="icon icon-twitter" src="twitter-logo.svg" alt="" width="30" height="30" loading="lazy" decoding="async">
+                  <span>Twitter</span>
+              </a>
+        </div>
+    </div>
+  </div>
+
+  <div class="abstract">
+    <strong>Note:</strong>
+    You may also find another version of this paper titled <a href="https://scholar.google.co.in/citations?view_op=view_citation&hl=en&user=nx3vmEkAAAAJ&citation_for_view=nx3vmEkAAAAJ:ZeXyd9-uunAC"><b>DeTox: Toxic Subspace Projection for Model Editing.</b></a>
+      This is the same paper—just an earlier iteration. Apologies for any confusion!
+  </div>
+
+  <div id="toc-container">
+    <h2 id="toc-title">Table of Contents</h2>
+    <ul id="toc"></ul>
+  </div>
+
+
+    <h2>A Tale of Two Communities</h2>
+
+    <div class="tldr-box" role="note" aria-label="TL;DR summary"><div class="tldr-ribbon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 1L3 14h7l-1 9 10-13h-7l1-9z" /></svg>TL;DR</div><div class="tldr-content">
+    Alignment research splits between <i>tuning</i> (optimising with data) and <i>editing</i> (directly intervening in representations).
+    Both aim to reshape a model’s internal geometry — ProFS bridges them by showing they’re mathematically connected.
+    </div></div>
+
+    <p>Large language models are powerful but fragilely aligned. Even models trained with RLHF, DPO, RLAIF etc. can be jail-broken through creative prompting — reframing unsafe requests, encoding malicious intent or role-playing. These failures hint that alignment isn’t merely about outputs; it’s about how safety is represented inside the model.</p>
+
+    <h3>Community A: Alignment through Tuning</h3>
+    <p>The mainstream view treats alignment as a training problem. RLHF, DPO, KTO and others push the model’s behaviour toward human preferences through gradient updates. While effective, they demand vast data and compute, and their inner workings remain opaque. Even well-aligned models regress under distribution shifts, suggesting tuning polishes surface behaviour rather than re-shaping unsafe latent directions.</p>
+
+    <h3>Community B: Alignment through Editing</h3>
+    <p>A smaller community treats alignment as an intervention problem. If unwanted properties like toxicity, bias, or general harmfulness occupy identifiable subspaces, we can edit them directly — altering specific directions in activation or weight space. Editing is fast, data-efficient, and interpretable, but its side effects and generality are still under exploration; and thus these methods are yet to be adopted into mainstream application.</p>
+
+    <h3>Bridging the Communities</h3>
+    <p>Despite its appeal, editing remains a niche practice, partly because its broader side effects are not yet well understood. Tuning methods are evaluated through large-scale preference benchmarks, while editing work is usually framed as an interpretability problem. The two strands have therefore evolved in parallel, with little shared vocabulary. The result is a fragmented landscape in which tuning papers compare only with tuning baselines and editing papers with editing baselines, even though both aim to steer the model’s internal space towards desirable behaviours.</p>
+
+    <p>This divide motivates our study. If both training and editing attempt to reshape a model’s latent geometry to encourage some directions and suppress others, then it should be possible to describe them within a common framework. Can an edit be understood as the limit of a training update? And if so, what might that reveal about when alignment generalises—and when it quietly fails?</p>
+
+    <div class='abstract'>
+      <b>Takeaway:</b> Tuning and editing may be two languages for the same geometry — one iterative, one analytical.
+    </div>
+
+
+    <h2>Where Toxicity Lives: Mapping Subspaces in Model Representations</h2>
+
+    <div class="tldr-box" role="note" aria-label="TL;DR summary"><div class="tldr-ribbon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 1L3 14h7l-1 9 10-13h-7l1-9z" /></svg>TL;DR</div><div class="tldr-content">
+    Toxicity manifests as low-dimensional, nearly linear directions in activation space. By contrasting toxic and non-toxic continuations, we can isolate these “toxic subspaces” using simple linear algebra (SVD).
+    </div></div>
+
+    <h3>The Intuition</h3>
+    <p>If a model can be persuaded to generate harmful text, then at some level it must <em>represent</em> the concept of harm internally. The question, of course, is how and where. Under the linear-representation hypothesis, abstract properties like sentiment or politeness correspond to specific directions in activation space. We test whether toxicity behaves the same way.</p>
+
+    <h3>The Setup</h3>
+    <p>We start with a small dataset of paired continuations — the same prompt completed once with toxicity and once safely. Each pair acts as a miniature “contrastive lens”: what changes inside the model when it switches from a harmful to a harmless completion?</p>
+
+    <figure>
+    <img src="1-toxic-text-examples.png" alt="Examples of toxic and non-toxic text." style="width:75%;">
+    <figcaption>Figure 1: Examples of paired data—toxic and non-toxic continuations to the same prompt. Tokens have been censored for readability.</figcaption>
+    </figure>
+
+    <h3>The Procedure</h3>
+    <ol>
+        <li><b>Collect paired activations:</b> For each pair, record the hidden representations from the same layer.</li>
+        <li><b>Compute the difference:</b> Subtract non-toxic from toxic activations to highlight the shift.</li>
+        <li><b>Stack differences</b> across many pairs to build a contrastive matrix.</li>
+        <li><b>Apply SVD</b> to find consistent directions that separate the two behaviours.</li>
+    </ol>
+    <p>These dominant singular directions form the model’s <b>toxic subspace</b> — the small region in activation space most responsible for unsafe continuations.</p>
+
+    <h3>What the Directions Mean</h3>
+    <p>The top orthogonal directions from this operation—our <strong><em>toxic subspace</em></strong>—capture the most toxic behaviours, while the later directions tend to reflect frequent or contextual features that are not inherently harmful. But how do we know this for sure? To interpret what each direction represents, we apply a simple diagnostic tool known as <em>logit lens</em>. This involves feeding the vector through the model’s output layer to see which tokens it would most strongly predict if treated as a hidden state.</p>
+
+    <figure>
+    <img src="2-top-k-tokens.png" alt="Interpreting the top singular vectors of the difference of preference data embeddings." style="width:50%;">
+    <figcaption>Table 1: Interpreting the top singular vectors of the difference of preference data embeddings. Tokens have been censored for readability.</figcaption>
+    </figure>
+
+    <p>The first few vectors predict toxic or offensive words; later ones predict benign terms like punctuation and common verbs. This confirms that the top directions encode toxicity itself, while the rest describe normal language structure.</p>
+
+    <div class='abstract'>
+      <b>Takeaway:</b> Once you know where toxicity lives, deleting it is just projection.
+    </div>
+
+    <p>The real challenge lies in precision: how to act on a subspace without disrupting the surrounding manifold of useful capabilities. It is this question that motivates our projection-based method, <strong>ProFS</strong>, to which we now turn.</p>
+
+
+    <h2>ProFS: Projection Filter for Subspaces</h2>
+
+    <div class="tldr-box" role="note" aria-label="TL;DR summary"><div class="tldr-ribbon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 1L3 14h7l-1 9 10-13h-7l1-9z" /></svg>TL;DR</div><div class="tldr-content">
+    ProFS removes toxicity directly from a model’s internal geometry. It identifies the “toxic subspace” from paired activations and projects it out of the MLP value matrices — a single linear edit that matches DPO-level alignment at a fraction of the data and compute cost.
+    </div></div>
+
+    <h3>From Mapping to Editing</h3>
+
+    <p>We now know <i>where</i> toxicity lives inside a model’s representations. The next challenge is to remove it without damaging the model’s broader capabilities. Our key intuition is that effective editing requires the <i>purest possible toxic subspace</i>—a space that captures toxicity and <i>only</i> toxicity. Any overlap with directions encoding syntax or semantics risks corrupting the model’s general fluency or reasoning ability.</p>
+
+    <h3>The Three Step Process</h3>
+    <figure>
+      <img src="3-projection-diagram.png" alt="Schematic illustration of projection filtering in ProFS." style="width:85%;">
+      <figcaption>Figure 2: Schematic of ProFS. Toxic directions (in red) are projected out of the model’s MLP-value matrices, leaving other representational directions intact.</figcaption>
+    </figure>
+
+    <h4>Step 1: Removing the mean direction</h4>
+    <p>Table 1 reveals an interesting pattern: the mean vector across non-toxic examples tends to encode common tokens—stopwords, punctuation, and grammatical markers—that are fundamental to coherent text generation. If left uncorrected, these high-frequency directions can leak into our toxic subspace estimate, causing the edit to damage the model's sentence forming ability. To prevent this, we first centre the contrastive matrix by removing the mean direction. This centring step isolates the components that vary specifically with toxicity, ensuring that subsequent edits leave linguistic structure intact.</p>
+
+    <h4>Step 2: Extracting the "pure" toxic subspace</h4>
+    <p>We then decompose the centred matrix using singular value decomposition (SVD). SVD finds the axes along which activations change the most when the model goes from safe to toxic text. The top few axes — our toxic subspace — capture the patterns most responsible for harmful generations. We retain only the top-<em>r</em> singular vectors identified as toxic through logit-lens inspection (see Table&nbsp;1 and Figure&nbsp;2). These vectors are a closer estimate of the model’s true toxic subspace.</p>
+
+    <h4>Step 3: Projecting away the toxic subspace</h4>
+    <p>With the toxic subspace in hand, we edit the model directly. For each MLP block, we modify only the second (value) matrix—the layer shown in prior interpretability work to store factual and conceptual knowledge. The projection is a single, analytic and one-line operation:</p>
+
+    <div class='abstract'>
+      “Subtract the component of each weight that points in a toxic direction.”
+    </div>
+
+    <p>Because it is linear and applied once, the procedure is fast and transparent.</p>
+
+    <details><summary style="font-size: 1.05em; font-weight: bold; color: #006400;">[Show mathematical formulation of ProFS]</summary>
+    <p>Given our toxic and non-toxic preference data, we extract the hidden embeddings of both as \( X^{+}_{\ell} \) and \( X^{-}_{\ell} \in \mathbb{R}^{N \times D} \), where \( \ell \) indexes the layer, \( N \) is the number of datapoints and \( D \) is the model's hidden dimension. (We take embeddings from the last token position.) Then,</p>
+
+     <ul>
+         <li>Their difference \( T^{0}_{\ell} := X^{+}_{\ell} - X^{-}_{\ell} \) captures how activations shift.</li>
+         <li>After centering \( T^{0}_{\ell}\) we get \( T_{\ell} = T^{0}_{\ell}\,(I - P_{\mu})\), where \(P_{\mu} := \frac{\mu\,\mu^{\top}}{\|\mu\|^{2}} \) </li>
+         <li>Our toxic subspace comes from the top-r singular vectors of \( T_{\ell}\): \( P_{\text{toxic}} = \sum_{i=1}^{r} v_{i} v_{i}^{\top} \)</li>
+         <li>Finally, the edit on each MLP value matrix is a simple projection: \( W_{\ell}^{\text{edited}} = (I - P_{\text{toxic}})\, W_{\ell}^{\text{original}} \)</li>
+     </ul>
+    </details>
+
+    <h3>How does this perform?</h3>
+    <p>ProFS matches DPO’s toxicity reduction across safety benchmarks while preserving utility preserving general (measured across diverse benchmarks such as BoolQ, RTE, and HellaSwag). Notably, ProFS does this with about  ≈ ¼ the training data. (In the paper, we show this can be achived in as little as 50 datapoints!)</p>
+
+    <figure>
+      <img src="4-toxicity-vs-capability.png" alt="Comparison of toxicity reduction and capability preservation across models." style="width:80%;">
+      <figcaption>Figure 3: ProFS reduces toxicity to the same degree as DPO while maintaining task performance. Further, ProFS achieves DPO-level toxicity reduction with roughly four times fewer preference pairs.</figcaption>
+    </figure>
+
+    <ul>
+        <li><b>Safety:</b> Comparable toxicity drop to DPO.</li>
+        <li><b>Capability:</b> No loss on BoolQ, RTE, or HellaSwag.</li>
+        <li><b>Efficiency:</b> 4× fewer preference pairs, 0 gradient updates.</li>
+    </ul>
+
+    <h3>Shared Mechanisms</h3>
+
+    <p>Even more interestingly, Figure 4 shows that layer-wise probability contributions change in nearly identical patterns for ProFS and DPO, suggesting that the two methods influence similar internal mechanisms.</p>
+
+    <figure>
+      <img src="5-prob-change.png" alt="Sample efficiency comparison between DPO and ProFS." style="width:75%;">
+      <figcaption>Figure 4: Contribution of individual layers towards token probabilities. Both DPO and ProFS have similar contributions, incrementally suppressing the contribution of toxic tokens.</figcaption>
+    </figure>
+
+    <p>In summary, ProFS mirrors DPO in its effects but achieves them through a single projection rather than thousands of optimisation steps. The two appear empirically equivalent in their outcomes, yet differ profoundly in efficiency and transparency. This naturally raises a deeper question: are they theoretically connected? Can ProFS be derived as a principled, closed-form limit of DPO?</p>
+
+    <div class='abstract'>
+      <b>Takeaway:</b> ProFS is <i>precise</i> (targets only toxicity-linked directions), <i>transparent</i> (each edit is inspectable) and <i>efficient</i> (DPO level alignment with minimal data and no gradient updates). Further, we see empirical hints of bridging: both methods similarly change next token distributions.
+    </div>
+
+
+    <h2>When Geometry Meets Optimisation: A Factor Analysis View of ProFS and DPO</h2>
+
+    <div class="tldr-box" role="note" aria-label="TL;DR summary"><div class="tldr-ribbon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 1L3 14h7l-1 9 10-13h-7l1-9z" /></svg>TL;DR</div><div class="tldr-content">
+        Though ProFS looks nothing like DPO, both modify the same latent structure. DPO slowly learns the toxic subspace through noisy gradient updates, while ProFS jumps straight there by computing it analytically. In effect, <b><i>ProFS ≈ a denoised, closed-form DPO step.</i></b>
+    </div></div>
+
+    <p>Empirically, ProFS behaves remarkably like DPO. Both reduce toxicity while preserving linguistic fluency, and both shift token probabilities in nearly identical ways. Yet the two methods could not be more different in spirit: DPO is an optimisation procedure, while ProFS is a single geometric projection. To understand why they converge to such similar outcomes, we take a step back and construct a simple theoretical model.</p>
+
+    <h3>A minimal model for layer activations</h3>
+
+    <p>Each sentence embedding (toxic or safe) can be thought of as a mix of:</p>
+    <ul>
+        <li>a linguistic mean (grammar, punctuation),</li>
+        <li>a toxic component,</li>
+        <li>a non-toxic/contextual component, and</li>
+        <li>some random noise.</li>
+    </ul>
+
+    <p>Moving from a non-toxic to a toxic completion means adding a bit of that toxic component. ProFS isolates it directly; DPO learns to suppress it statistically.</p>
+
+    <details><summary style="font-size: 1em; font-weight: bold; color: #006400;">[Show the compact formulation]</summary>
+        <p>Recall our earlier setting: we have toxic and non-toxic sentence embeddings, \( X^{+} \) and \( X^{-} \in \mathbb{R}^{N \times D} \). Each pair of activations \( x_i^{+} \) and \( x_i^{-} \) can be decomposed as:</p>
+        <p style="text-align:center;">
+          \( x_i^{+} = a^{+}\mu + Bf_i + \tilde{B}\tilde{f}_i + u_i^{+}, \quad
+             x_i^{-} = a^{-}\mu + \tilde{B}\tilde{f}_i + u_i^{-} \)
+        </p>
+        <p>Here,</p>
+        <ul>
+            <li>\( \mu \): linguistic mean direction of the language—capturing stopwords, punctuation, and other high-frequency tokens essential for syntax</li>
+            <li>\( Bf_i \): toxic component</li>
+            <li>\( \tilde{B}\tilde{f}_i \): topic-dependent variation</li>
+            <li>\( u_i \): noise the model cannot account for</li>
+        </ul>
+    </details>
+
+    <h3>What ProFS Actually Constructs</h3>
+
+    <p>When we compare the toxic and non-toxic activations for each prompt, their difference captures not only toxicity but also background patterns like punctuation and stopwords. To focus only on toxicity, ProFS removes this average linguistic direction — the component that’s roughly the same across all examples. This is the centering operation (Step 1 of ProFS) we saw earlier.</p>
+
+    <p>Applying the same operation on this minimal model, we get two terms:</p>
+    <ul>
+      <li>the <b>signal</b>: the true toxic subspace (which we want to remove)</li>
+      <li>the <b>noise</b>: everything else (which we want to preserve in the model)</li>
+    </ul>
+
+    <p>ProFS uses SVD to cleanly separate these — signal goes to the top singular vectors, noise is discarded.</p>
+
+  <details><summary style="font-size: 1em; font-weight: bold; color: #006400;">[Show the math]</summary>
+  <p>When ProFS subtracts toxic and safe activations and re-centers them, it’s effectively performing:</p>
+    <p style="text-align:center;">
+      \( (x_i^+ - x_i^-)(x_i^{+} - x_i^{-}) = (I - P_{\mu})Bf_i + (I - P_{\mu})(u_i^{+} - u_i^{-}) \)
+    </p>
+    <p>ProFS constructs an approximate toxic subspace by taking the difference between toxic and non-toxic activations and then centring it, removing the mean direction \( \mu \). Applying this to the decomposition above, we obtain:</p>
+    <p style="text-align:center;">
+      \( (I - P_{\mu})(x_i^{+} - x_i^{-}) = (I - P_{\mu})Bf_i + (I - P_{\mu})(u_i^{+} - u_i^{-}) \)
+    </p>
+    <p>This centred difference consists of two components:</p>
+      <ul>
+      <li><strong>Signal:</strong> \( (I - P_{\mu})Bf_i \), the projection of the true toxic subspace onto the mean-free region of activation space.</li>
+      <li><strong>Noise:</strong> \( (I - P_{\mu})(u_i^{+} - u_i^{-}) \), the residual variation uncorrelated with toxicity.</li>
+    </ul>
+    <p>Here, \( g_i \) represents the centred noise for the <em>i</em>-th sample, and \( B^{*} \) denotes the <i>centred toxic subspace</i>—the component of \( B \) that remains after removing the linguistic mean direction. Substituting these back gives:</p>
+    <p style="text-align:center;">
+      \( (I - P_{\mu})(x_i^{+} - x_i^{-}) = B^{*}f_i + g_i \)
+    </p>
+    <p>Stacking these differences across all \( N \) examples produces a matrix of contrastive representations, \( T_{\ell} \), such that:</p>
+    <p style="text-align:center;">
+      \( T_{\ell} = [\, B^{*}f_1 + g_1,\; B^{*}f_2 + g_2,\; \ldots,\; B^{*}f_N + g_N \,]^{\top} \)
+    </p>
+    <p>Equivalently, this can be written compactly as:</p>
+    <p style="text-align:center;">
+      \( T_{\ell} = F(B^{*})^{\top} + G \tag{6} \)
+    </p>
+    <p>where \( F \) collects the latent factors \( f_i \) as rows, and \( G \) collects the noise terms \( g_i \). The first term, \( F(B^{*})^{\top} \), represents the structured, low-rank signal that encodes toxicity; the second term, \( G \), represents unstructured noise.</p>
+    </details>
+
+    <h3>DPO through the same lens</h3>
+
+    <p>We can now re-express DPO within this same framework. Assume a simple logistic model \( \pi_W(y|x_i) \) whose conditional probability of the next token is \( \pi_W(y|x_i) = Z_W^{-1} \exp(w_y^{\top}Wx_i) \). Each gradient update is a noisy estimate of the same shift that ProFS isolates instantly. Under this formulation, the gradient of the DPO loss at initialisation can be written as:</p>
+
+    <p style="text-align:center;">
+      \( \nabla_W \mathcal{L}_{\text{DPO}} \propto \sum_i \big(w_{y_i}(x_i^{+})^{\top} - w_{y_i}(x_i^{-})^{\top}\big) \)
+    </p>
+
+    <p>Notice how it depends on the same difference of activations as (\T_\ell\). So DPO’s early updates span roughly the same subspace that ProFS finds through SVD. Both methods are, at their core, recovering the same toxic signal while attenuating the noise term.</p>
+
+    <h3>Two voices, One song</h3>
+    <em>(I expect no one to get the reference to this title. If you do, we need to be friends!)</em>
+
+    <p>When ProFS applies singular value decomposition (SVD) it effectively separates the signal and noise components, recovering the toxic subspace as the dominant low-rank subspace. Because SVD performs an implicit denoising, ProFS can identify the correct subspace cleanly with only a few paired examples.</p>
+
+    <p>DPO, on the other hand, performs the same operation implicitly through optimisation. Its stochastic gradient updates also move the model along the direction of toxicity, but the noise terms only cancel out after averaging over many training iterations. In this sense, DPO performs statistical denoising where ProFS achieves the same result geometrically and in closed form.</p>
+
+    <p>Under this model, we can view <strong>ProFS as a denoised, closed-form variant of a single DPO step</strong>. Where DPO gradually converges to the correct subspace through iterative updates, ProFS reaches it analytically by projecting out the noisy directions. This perspective helps bridge the gap between training-based alignment and editing-based alignment, suggesting that both are, fundamentally, different routes to reshaping the same internal geometry.</p>
+
+
+    <h3>Evidence in Gradients</h3>
+
+    <p>ProFS and DPO are heading in the same direction — ProFS just gets there in one clean move instead of thousands of gradient steps. To check if that actually happens in practice, we looked at the DPO gradients themselves. When we directly measured DPO’s first-step gradients, they already pointed strongly in the direction ProFS removes — and the overlap grows with more training data. That’s concrete evidence that both travel through the same corridor of weight space.</p>
+
+    <figure>
+    <img src="6-dpo-gradients-correlation.png" alt="Correlation between DPO gradients and the toxic subspace" style="width:50%;">
+    <figcaption>Figure 5: Correlation between DPO gradients and the toxic subspace identified by ProFS. Larger sample sizes increase alignment, especially in higher layers.</figcaption>
+    </figure>
+
+    <p>The pattern is striking. DPO’s gradients line up with the ProFS subspace far more than chance. The correlation gets stronger in later layers — exactly where edits tend to be most effective — and it grows with sample size. In other words, DPO slowly “learns” the same subspace that ProFS finds instantly. With enough data, both approaches end up moving weights in almost the same direction; ProFS just skips the noisy averaging and computes that direction directly. That’s what makes it a kind of <strong>denoised shortcut to DPO</strong>.</p>
+
+    <div class='abstract'>
+      <b>Takeaway:</b> Both ProFS and DPO act on the same latent structure.
+        <ul>
+            <li><b>ProFS:</b> isolates and removes the toxic subspace in one clean projection (geometric denoising).</li>
+            <li><b>DPO:</b> keeps updating until stochastic gradients average out the same toxic signal (statistical denoising).</li>
+        </ul>
+        ProFS performs <b>in one step</b> what DPO approximates through many noisy ones.
+    </div>
+
+
+    <h2>Wider Applicability of ProFS</h2>
+
+    <div class="tldr-box" role="note" aria-label="TL;DR summary"><div class="tldr-ribbon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 1L3 14h7l-1 9 10-13h-7l1-9z" /></svg>TL;DR</div><div class="tldr-content">
+        <b>ProFS isn’t limited to toxicity.</b><br>
+        It generalises to broader safety preferences (like harmlessness) and stays especially reliable when labels are noisy — because it relies on the geometry of activations, not the literal correctness of every label.
+    </div></div>
+
+    <h3>Preferences Beyond Toxicity</h3>
+
+    <p>So far, we’ve focused on toxicity because it’s a clean and measurable case — the signal is easy to spot and the model’s responses can be evaluated automatically. But real alignment challenges — <em>harmfulness, ethical sensitivity, bias, persuasion</em> — are subtler and often defined by context rather than keywords. So, can the same geometric intuition that worked for toxicity extend to these higher-level preferences?</p>
+
+    <p>It turns out, yes. When we applied ProFS to the HH-Golden safety dataset, which covers these broader notions of harmlessness, the same geometric pattern appeared. The only difference was dimensionality: instead of a tiny subspace (2–4 directions), the harmlessness signal spanned a higher-rank subspace, reflecting its richer semantics. Furthermore, according to GPT-4 judgement, both ProFS and DPO achieve similar improvements in generating safe responses.</p>
+
+    <figure>
+    <img src="7-hhgolden-win-rate.png" alt="ProFS vs DPO win rates on HH-Golden dataset" style="width:30%;">
+    <figcaption>Table 2: Win rate of ProFS over DPO (evaluated by GPT-4) on the HH-Golden safety dataset. The higher subspace rank reflects the complexity of the underlying behaviour.</figcaption>
+    </figure>
+
+    <div class='abstract'>
+      <b>Takeaway:</b> Safety behaviours — even abstract ones — still manifest as coherent directions in activation space which can be projected away, without damaging model utility.
+    </div>
+
+    <h3>Robustness to Noisy Labels</h3>
+
+    <p>Real datasets are messy. Human annotations are inconsistent, and preference data often carries noise — especially when collected at scale. With toxicity, for instance, mislabelled data can make a model <em>more toxic</em> if it learns from the wrong examples. So how does ProFS handle label noise compared to a training-based method like DPO?</p>
+
+     <figure>
+      <img src="8-label-noise-robustness.png" alt="Label noise robustness comparison between ProFS and DPO" style="width:45%;">
+      <figcaption>Figure 6: ProFS remains robust to labelling noise, while DPO performance degrades as more examples are mislabelled.</figcaption>
+    </figure>
+
+    <p>Unsurprisingly, DPO’s effectiveness drops steadily as noise increases, whereas ProFS remains almost completely stable even when half the dataset is incorrectly labelled. This robustness comes from the mathematics of SVD: the singular vectors of \( T_{\ell} \) are equivalent to the eigenvectors of the Gram matrix \( T_{\ell}^{\top} T_{\ell} \), and flipping the sign of any row in \( T_{\ell} \) doesn’t affect \( T_{\ell}^{\top} T_{\ell} \) at all. In simpler terms, ProFS looks at the overall geometry of the data, not individual labels — so noisy examples don’t distort its direction.</p>
+
+    <div class='abstract'>
+      <b>Takeaway:</b> Geometry-based editing automatically denoises mislabelled data — an advantage training-based methods have to fight for.
+    </div>
+
+
+    <h2>Wrapping Up</h2>
+
+    <div class="tldr-box" role="note" aria-label="TL;DR summary"><div class="tldr-ribbon"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 1L3 14h7l-1 9 10-13h-7l1-9z" /></svg>TL;DR</div><div class="tldr-content">
+        ProFS reframes training-based alignment as a geometric problem. It shows that undesirable behaviours correspond to identifiable subspaces and that removing them can be done analytically, without retraining. Editing and optimisation emerge as two implementations of the same underlying mechanism.
+    </div></div>
+
+    <p>You made it to the end! Well done — go reward yourself with a snack.</p>
+
+    <p>If your mind wandered while reading this (mine did too, and I wrote the whole thing), or if some of it felt hard to digest — that’s completely normal. This is a different way of thinking about model alignment than the usual machine learning story most of us are used to. So, here’s a quick recap.</p>
+
+    <h3>Summary</h3>
+    <p>Across the study, we examined how alignment and model editing intersect. Toxicity served as a tractable case study: a behaviour with clear signal and measurable outcomes.</p>
+     <ul>
+         <li><b>Mapping:</b> Paired toxic / non-toxic continuations revealed that toxicity occupies a consistent low-rank subspace.</li>
+         <li><b>Editing:</b> ProFS removes that subspace directly from MLP-value matrices through a single projection.</li>
+         <li><b>Connection to DPO:</b> Gradient analysis and theoretical derivations show that DPO gradually learns the same subspace that ProFS isolates in closed form.</li>
+         <li><b>Evidence:</b> Empirical overlap of gradients confirms this link; performance and safety metrics match despite the difference in data and compute cost.</li>
+         <li><b>Generalisation:</b> The same geometric principle extends to broader preference datasets and remains stable under label noise.</li>
+     </ul>
+    <p>In effect, ProFS offers a transparent, data-efficient complement to training-based alignment.</p>
+
+    <h3>Limitations</h3>
+    <p>Of course, ProFS isn’t perfect. It depends heavily on how we choose the singular vectors that define the subspace. Select too few, and the edit won’t fully remove toxicity; select too many, and the model may lose useful capabilities or subtle stylistic traits — a common pitfall in unsupervised subspace editing. Also, our method currently edits only the <em>MLP-value</em> layers. While these layers encode much of the model’s “knowledge”, attention heads are equally important for how that knowledge is applied. Extending projection-based editing to attention mechanisms is an exciting next step.</p>
+
+    <h3>Open Questions</h3>
+    <ul>
+      <li><strong>Modelling subtle preferences:</strong> How well does this approach generalise to trickier alignment goals like bias, persuasion, or reasoning integrity — where the line between “good” and “bad” behaviour is harder to draw?</li>
+      <li><strong>Dynamic edits:</strong> Could projections like ProFS be made context-aware — adapting the subspace in real time based on the conversation or the user’s intent?</li>
+      <li><strong>Bridging communities:</strong> Can we bring editing and tuning closer together? If both are just different routes to shaping a model’s internal geometry, hybrid methods might combine the transparency of editing with the flexibility of learning.</li>
+    </ul>
+
+    <p>At the end of the day, our hope with ProFS is simple: alignment doesn’t have to be a mysterious black box. Sometimes, it’s just a matter of understanding the shape of your model’s space — and knowing exactly where to project.</p>
+
+    <p>Let’s end on a lighter note: here are a few examples of ProFS-edited models politely refusing harmful requests (and doing it with a bit of personality). Notice how the model can still discuss these topics safely when asked in the right context — proof that editing doesn’t mean forgetting.</p>
+
+    <figure>
+      <img src="9-profs-refusal-example.png" alt="Examples of ProFS models refusing harmful prompts politely" style="width:80%;">
+      <figcaption>Figure 7: ProFS-edited models sometimes like adding personality to their refusal of harmful prompts. The first response is from an un-aligned model which leaks unsae information. The second response is after ProFS editing.</figcaption>
+    </figure>
+
+    <figure>
+      <img src="10-profs-safe-context-examples.png" alt="Examples of ProFS models discussing harmful topics safely in context" style="width:80%;">
+      <figcaption>Figure 8: Editing with ProFS doesn’t make the model forget a concept — it just steers it toward safe, contextual use.</figcaption>
+    </figure>
+
+
+  <h4 align='center'>Thanks for reading!</h4>
+
+  <footer>
+    © 2025 Rheeya Uppaal· <a href="/">Back to main site</a>
+  </footer>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const toc = document.getElementById("toc");
+  if (!toc) return;
+
+  const headers = document.querySelectorAll("h2, h3");
+  let lastH2Item = null;
+  let currentSubList = null;
+
+  headers.forEach((header, index) => {
+    if (header.id === "toc-title") return;
+    if (!header.id) header.id = "section-" + index;
+
+    const link = document.createElement("a");
+    link.textContent = header.textContent;
+    link.href = "#" + header.id;
+
+    if (header.tagName === "H2") {
+      const li = document.createElement("li");
+      li.classList.add("toc-h2");
+      li.appendChild(link);
+      toc.appendChild(li);
+      lastH2Item = li;
+      currentSubList = null;
+    } else if (header.tagName === "H3" && lastH2Item) {
+      if (!currentSubList) {
+        currentSubList = document.createElement("ul");
+        currentSubList.classList.add("toc-sublist");
+        currentSubList.style.display = "none"; // collapsed by default
+        lastH2Item.appendChild(currentSubList);
+
+        // Add toggle behavior to parent <h2> item
+        lastH2Item.classList.add("collapsible");
+        lastH2Item.addEventListener("click", function (e) {
+          if (e.target.tagName.toLowerCase() === "a") return;
+          const sublist = this.querySelector(".toc-sublist");
+          if (sublist) {
+            sublist.style.display =
+              sublist.style.display === "none" ? "block" : "none";
+          }
+        });
+      }
+      const subLi = document.createElement("li");
+      subLi.classList.add("toc-h3");
+      subLi.appendChild(link);
+      currentSubList.appendChild(subLi);
+    }
+  });
+});
+</script>
+
+</body>
+</html>
