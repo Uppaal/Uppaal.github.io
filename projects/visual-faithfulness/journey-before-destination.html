@@ -1,0 +1,297 @@
+<!-- Notes:
+- To convert PDF to PNG: https://www.adobe.com/acrobat/online/pdf-to-png.html
+- To preview the webpage,
+  - python -m http.server 8000
+  - http://localhost:8000/filename.html -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
+  <title>Journey Before Destination: On the importance of Visual Faithfulness in Slow Thinking</title>
+
+  <style>
+    :root {
+      --heading-color: #006400;
+      --link-color: #01a049;
+      --font-color: #111;
+      --bg-color: #fff;
+      --banner-bg: #f5f5f5;
+      --footer-color: #777;
+      --tldr-accent: var(--heading-color);
+      --tldr-border: var(--heading-color);
+      --tldr-bg: #f9fff9;
+      --tldr-text: var(--font-color);
+    }
+    body {
+      font-family: Arial, Calibri, Helvetica, sans-serif;
+      color: var(--font-color);
+      background-color: var(--bg-color);
+      max-width: 1100px;
+      margin: 0 auto 60px auto;
+      padding: 0 40px;
+      line-height: 1.9em;
+    }
+
+    .paper-header {background-color: var(--banner-bg); width: 100vw; position: relative; padding: 50px 0 40px 0;
+      left: 50%; right: 50%; margin-left: -50vw; margin-right: -50vw; border-bottom: 1px solid #ddd;}
+    .header-inner {max-width: 1100px; margin: 0 auto; text-align: center; padding: 0 20px;}
+    .paper-header h1 {font-size: 2.2em; font-weight: 700; margin-bottom: 0.4em; color: var(--heading-color); line-height: 1.25;}
+    .subtitle {font-size: 1.1em; color: #333; margin-bottom: 1.2em; font-weight: 500;}
+    .authors {font-size: 1em;line-height: 1.5;color: var(--heading-color);}
+    .authors span {color: #555;}
+    .affiliations {font-size: 1em; color: #555; margin-top: 0.8em;}
+    .affiliations span {margin: 0 10px;}
+
+    .button-group {margin-top: 1.5em;}
+    .button {display: inline-flex; align-items: center; gap: 10px; background-color: #333; color: #fff;
+      border-radius: 40px; padding: 10px 20px; font-size: 1em; text-decoration: none; transition: background 0.2s ease;}
+    .button svg {width: 22px; height: 22px; flex-shrink: 0;}
+    .button-arxiv:hover { background-color: #B31B1B; color: #FFFFFF}
+    .button-github:hover { background-color: #000000; color: #FFFFFF}
+    .button-huggingface:hover { background-color: #f1c232; color: #FFFFFF}
+    .button-twitter:hover { background-color: #1DA1F2; color: #FFFFFF}
+
+    h2 {font-family: Helvetica, Arial, sans-serif; color: var(--heading-color); border-bottom: 1px solid #ddd;
+        padding-bottom: 0.3em; margin-top: 2em; font-size: 1.4em;}
+    h3 {color: var(--heading-color); font-size: 1.1em;}
+    .detail-heading {color: var(--heading-color); font-size: 1.1em;}
+
+    a {text-decoration: none; color: var(--link-color);}
+    a:hover {text-decoration: underline; color: var(--heading-color);}
+
+    figure {margin: 2em auto; text-align: center;}
+    figure img {display: block; max-width: 100%; border-radius: 6px; margin: 0 auto;}
+    figcaption {font-size: 1em; color: #555; margin-top: 0.6em; font-style: italic;}
+
+    footer {margin-top: 3em; text-align: center; font-size: 0.9em; color: var(--footer-color);
+      border-top: 1px solid #d5d5d5; padding-top: 1.2em;}
+
+    @media (max-width: 768px) {
+      body { width: 90%; margin: 40px auto; font-size: 1.05em; padding: 0 20px; }
+      .paper-header { padding: 25px 0; }
+      .paper-header h1 { font-size: 1.7em; }
+    }
+
+    .abstract {background: #f9f9f9; border-left: 4px solid var(--heading-color); padding: 1em 1.5em; margin: 2em 0; font-style: italic;}
+    .tldr-box {font-family: inherit; color: var(--tldr-text); background: var(--tldr-bg); overflow: hidden;
+      border: 2px solid var(--tldr-border); border-radius: 8px; margin: 2em 1em; box-shadow: 0 3px 10px rgba(0, 100, 0, 0.08);}
+    .tldr-ribbon {background: var(--heading-color); color: #fff; font-weight: 549; font-size: 1em; line-height: 0.9em;
+      padding: 0.6em 1em; display: flex; align-items: center; gap: 0.65em; letter-spacing: 0.3px;}
+    .tldr-ribbon svg {width: 1em; height: 1em; stroke: currentColor; flex-shrink: 0;}
+    .tldr-content {padding: 1.2em 1.5em 1.4em; background: #fbfffb;}
+    .tldr-list li {margin: 0.25rem 0;}
+
+    #toc-container {background: #f9fff9; border: 1px solid var(--heading-color); border-radius: 8px; padding: 1em 1.5em; margin: 2em 0; box-shadow: 0 2px 6px rgba(0, 100, 0, 0.08);}
+    #toc-container h2 {border: none; margin-top: 0; font-size: 1.2em;}
+    #toc {list-style: none; margin: 0; padding: 0;}
+    #toc li {margin: 0.3em 0;}
+    #toc a {color: var(--link-color); text-decoration: none;}
+    #toc a:hover {text-decoration: underline; color: var(--heading-color);}
+    #toc li.toc-h3 {margin-left: 1.2em; font-size: 0.95em;}
+    #toc li.collapsible {cursor: pointer; position: relative;}
+    #toc li.collapsible::before {content: "▶"; position: absolute; left: -1.2em; color: var(--heading-color); transition: transform 0.2s ease;}
+    #toc li.collapsible.open::before {transform: rotate(90deg);}
+    .toc-sublist {margin-left: 1.2em; padding-left: 0.5em; border-left: 1px dotted #ccc;}
+  </style>
+</head>
+
+<body>
+  <div class="paper-header">
+    <div class="header-inner">
+      <h1>Journey Before Destination: On the importance of Visual Faithfulness in Slow Thinking</h1>
+      <div class="authors">
+        <span>Rheeya Uppaal<sup>1</sup></span>, <span>Phu Mon Htut<sup>2</sup></span>, <span>Min Bai<sup>2</sup></span>,
+        <span>Nikolaos Pappas<sup>2</sup></span>, <span>Zheng Qi<sup>1</sup></span>, <span>Sandesh Swamy<sup>1</sup></span>
+      </div>
+        <div class="affiliations">
+          <span><sup>1</sup>University of Wisconsin-Madison</span>
+          <span><sup>2</sup>AWS AI Labs</span>
+        </div>
+        <p></p>
+
+         <div class="button-group">
+              <a class="button button-arxiv" href="" aria-label="Read the paper on arXiv">
+                  <img class="icon icon-arxiv" src="arxiv-logo.svg" alt="" width="30" height="30" loading="lazy" decoding="async">
+                  <span>arXiv</span>
+              </a>
+              <a class="button button-github" href="" aria-label="View the code on GitHub">
+                  <img class="icon icon-github" src="github-logo.svg" alt="" width="30" height="30" loading="lazy" decoding="async">
+                  <span>Code</span>
+              </a>
+              <a class="button button-twitter" href="" aria-label="Get the excerpt on Twitter">
+                  <img class="icon icon-twitter" src="twitter-logo.svg" alt="" width="30" height="30" loading="lazy" decoding="async">
+                  <span>Twitter</span>
+              </a>
+        </div>
+    </div>
+  </div>
+
+    <div class="abstract">
+    Today’s reasoning-augmented Vision–Language Models (VLMs) don’t just give answers — they show their work. But what if that “work” is wrong… even when the final answer is right?
+    </div>
+
+
+    <figure>
+    <img src="1-Example-Errors.png" alt="Reasoning-chain faithfulness does not always align with final-answer correctness." style="width:75%;">
+    <figcaption>Figure 1. Reasoning-chain faithfulness does not always align with final-answer correctness. <b>(a–b)</b> Visually unfaithful reasoning chains that nonetheless yield correct answers on perception tasks. <b>(c)</b> A visually faithful chain producing an incorrect answer, where the error arises from reasoning rather than perception.</figcaption>
+    </figure>
+
+    <p>Reasoning-augmented vision–language models (VLMs) promise transparency by revealing not just their answers, but the steps used to reach them. Yet this transparency can be deceptive. As shown in Figure 1, a model may produce the correct final answer while its intermediate reasoning invents visual details that never appeared in the image - a lack of <i>visual faithfulness</i>. Conversely, a model may faithfully describe what it sees, yet still arrive at the wrong conclusion due to errors purely in logic.</p>
+
+    <p>This reveals a deeper issue: current evaluation for VLMs test how well the model "sees" an image by measuring final answer accuracy on perception based questions. But in Figure 2, we highlight that this can be misleading - final accuracy and reasoning faithfulness diverge sharply, and in many examples the model appears to “solve” the question without relying on its own stated reasoning.
+    </p>
+
+    <div style="display: flex; justify-content: space-between; gap: 20px;">
+      <figure style="width:58%;">
+        <img src="2-Acc-vs-Faithfulness.png" alt="Accuracy vs Faithfulness" style="width:55%;">
+        <figcaption>Figure 2. Reasoning faithfulness and final-answer accuracy diverge. Correct final answers are not always grounded in the image, and incorrect answers can still reflect visually faithful reasoning. Evaluating only final accuracy overlooks if the reasoning process itself attends to the visual evidence. The weak correspondence between final-answer correctness and reasoning-chain faithfulness shows that accuracy metrics alone cannot capture whether a model’s reasoning genuinely reflects what it “sees.”</figcaption>
+      </figure>
+
+      <figure style="width:42%;">
+        <img src="3-Causal-Chain.png" alt="Causal structure of prediction" style="width:80%;">
+        <figcaption>Figure 3. Causal structure underlying final answers and reasoning traces. Many evaluation protocols assume the final answer y is produced via the reasoning chain R (orange arrows). However, models can also map hidden features h directly to y (red arrow) via spurious correlations or language priors, bypassing R. Thus, high final-answer accuracy does not guarantee that intermediate reasoning steps are visually faithful.</figcaption>
+      </figure>
+    </div>
+
+    <div class="abstract">
+    Because this disconnect between accuracy and visual grounding reveals a genuinely new problem, we introduce both a metric to measure visual faithfulness in reasoning chains and a mitigation strategy to improve it.
+    </div>
+
+
+    <h2>Measuring Visual Faithfulness in Reasoning Chains</h2>
+
+    <p>Rather than relying on special detectors or handcrafted rules that could potentially generalize poorly, we test a very straightforward approach first - using an off-the-shelf VLM as a judge, and evaluating each step independently.</p>
+
+    <p>The judge first breaks down the model answer into steps, and then determines whether a step is a Perception step (describing visual content) or a Reasoning step (drawing inferences). For all Perception steps, it then evaluates the visual faithfulness. An example is illustrated in Figure 4.</p>
+
+    <figure>
+    <img src="4-Measuring-Faithfulness.png" alt="Measuring faithfulness with VLM judge." style="width:55%;">
+    <figcaption>Figure 4. Evaluation of Reasoning Chain Visual Faithfulness through a Judge. <b>Left:</b> Input provided to the judge model. <b>Right:</b> Output of the judge. </figcaption>
+    </figure>
+
+    <p>This approach design aligns closely with human annotation, and the paper’s human correlation study shows that a strong VLM judge—such as Claude 4 Sonnet—tracks human ratings with high reliability.</p>
+
+    <figure>
+    <img src="5-Judge-Correlations.png" alt="Correlations of Judges with Human Annotations" style="width:35%;">
+    <figcaption>Table 1. Comparison of various Judge models on the task of measuring visual faithfulness. The labels of each judge are compared against two sets of human annotations, using ICC 3-1 as a correlation measure. Correlations above 0.6 are considered acceptable.</figcaption>
+    </figure>
+
+    <p><b>How does this compare to using the answer generating model itself?</b> Compared to having the generating model assess its own reasoning, an external judge is far more capable (more details in our paper). Models are notoriously overconfident about their own outputs and often reproduce their own hallucinations instead of flagging them. External judging provides the objectivity needed for evaluation at scale.</p>
+    
+    <div class="abstract">
+    Simply prompting a VLM judge to evaluate visual faithfulness in reasoning chains is powerful - it shows high correlation with human judgement.
+    </div>
+
+    <h2>Improving Faithfulness: Knowing When and How to Intervene</h2>
+
+    <p>Once we can detect unfaithful perception steps, the next question is how to fix them. We frame this as a <b>when + how</b> problem.</p>
+
+    <p>Why this framing? The reasoning chains produced by modern VLMs are long and interleave perception steps with logical reasoning steps. 
+      Intervening everywhere would potentially disrupt the logical reasoning steps of generation (they aren't intended to look at the image, and forcing the model to reference the image at this point may worsen reasoning ability), 
+      while intervening too rarely leaves hallucinations untouched. The key insight is that interventions should occur only when an unfaithful perception step is detected, ensuring the model is corrected precisely at the point where its grounding fails.</p>
+
+    <p>The <b>"when"</b> method is a simple off the shelf VLM detector. We use Claude 3.7 Sonnet, and show simply prompting this model is significantly stronger than using trained detectors that utilize the generating VLM's internal states.</p>
+
+    <p>The <b>“how”</b> is a lightweight self-reflection mechanism. When the detector identifies an unfaithful step, the model is prompted to regenerate only that step with explicit instructions to examine the image more carefully. 
+      If the revision is faithful, the reasoning chain generation continues onward from the corrected point; if not, the regeneration is repeated up to a small retry limit. 
+      This keeps the corrections local, preserving most of the chain while improving grounding exactly where needed.</p>
+
+    <figure>
+    <div style="display: flex; justify-content: center; gap: 16px;">
+      <img src="6-Main-Result-UPR.png" alt="Faithfulness" style="width:35%;">
+      <img src="6-Main-Result-Acc.png" alt="Task Performance" style="width:35%;">
+    </div>
+    <figcaption>
+      Figure 5. Impact of our method on the visual faithfulness of reasoning chains. Both methods (vanilla and ours) use the same underlying model. Our method significantly reduces the unfaithful perception step rate (left), while also improving final answer accuracy (right). 
+    </figcaption>
+    </figure>
+
+    <p>The results in Figure 5 demonstrate large improvements in visual grounding (measured as lower Unfaithful Perception Rate, UPR) across multiple benchmarks and datasets.
+      Interestingly, accuracy on the final answers also improves in many cases. Strengthening intermediate perception helps the model reason better overall, indicating that faithful grounding is not just about interpretability—it also benefits task performance.</p>
+
+
+    <div class="abstract">
+    When the model makes a visually unfaithful claim, we catch it with a VLM judge and ask the model to rethink just that step. It works surprisingly well!
+    </div>
+
+
+    <h2>TL;DR</h2>
+    <ul>
+      <li>Modern vision–language models can produce <b>correct answers with visually unfaithful reasoning</b>, and also <b>faithful reasoning with incorrect answers</b>. 
+        Evaluating only the final answer misses this failure mode.</li>
+      <li>We identify <b>visual faithfulness of reasoning chains</b> as a new, distinct evaluation problem that existing hallucination metrics do not capture.</li>
+      <li>We introduce a <b>simple and scalable metric</b> that uses an off-the-shelf VLM as a judge to evaluate visual grounding step by step in a reasoning chain.</li>
+      <li>We also propose a simple, <b>training-free self-reflection method</b> that fixes unfaithful perception steps without disrupting the rest of the reasoning.
+      This approach <b>substantially reduces hallucinated visual steps</b> and often <b>improves final answer accuracy</b> as a side effect.</li>
+    </ul>
+
+    <p>Overall, we see this work as an intial step: the main goal was to clearly surface the problem and offer an initial toolkit, and we hope it encourages the community to explore stronger, more practical ways to make multimodal reasoning truly faithful.</p>
+
+  <h4 align='center'>Thanks for reading!</h4>
+
+  <footer>
+    © 2025 Rheeya Uppaal· <a href="/">Back to main site</a>
+  </footer>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const toc = document.getElementById("toc");
+  if (!toc) return;
+
+  const headers = document.querySelectorAll("h2, h3");
+  let lastH2Item = null;
+  let currentSubList = null;
+
+  headers.forEach((header, index) => {
+    if (header.id === "toc-title") return;
+    if (!header.id) header.id = "section-" + index;
+
+    const link = document.createElement("a");
+    link.textContent = header.textContent;
+    link.href = "#" + header.id;
+
+    if (header.tagName === "H2") {
+      const li = document.createElement("li");
+      li.classList.add("toc-h2");
+      li.appendChild(link);
+      toc.appendChild(li);
+      lastH2Item = li;
+      currentSubList = null;
+    } else if (header.tagName === "H3" && lastH2Item) {
+      if (!currentSubList) {
+        currentSubList = document.createElement("ul");
+        currentSubList.classList.add("toc-sublist");
+        currentSubList.style.display = "none"; // collapsed by default
+        lastH2Item.appendChild(currentSubList);
+
+        // Add toggle behavior to parent <h2> item
+        lastH2Item.classList.add("collapsible");
+        lastH2Item.addEventListener("click", function (e) {
+          if (e.target.tagName.toLowerCase() === "a") return;
+          const sublist = this.querySelector(".toc-sublist");
+          if (sublist) {
+            sublist.style.display =
+              sublist.style.display === "none" ? "block" : "none";
+          }
+        });
+      }
+      const subLi = document.createElement("li");
+      subLi.classList.add("toc-h3");
+      subLi.appendChild(link);
+      currentSubList.appendChild(subLi);
+    }
+  });
+});
+</script>
+
+</body>
+</html>
