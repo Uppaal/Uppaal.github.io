@@ -24,7 +24,7 @@
     gtag('config', 'G-8P4M88PV5K');
   </script>
 
-  <title>OpenSafeIntent: Evaluating Intent-Calibrated Safe Completion Across Dual-Use Prompt Sets</title>
+  <title>OpenSafeIntent: A Diagnostic Benchmark for Intent-Calibrated Safe Completion</title>
 
   <style>
     :root {
@@ -122,7 +122,7 @@
 <body>
   <div class="paper-header">
     <div class="header-inner">
-      <h1>OpenSafeIntent: Evaluating Intent-Calibrated Safe Completion Across Dual-Use Prompt Sets</h1>
+      <h1>OpenSafeIntent: A Diagnostic Benchmark for Intent-Calibrated Safe Completion</h1>
       <div class="authors">
         <span>Rheeya Uppaal<sup>1</sup></span>, <span>Seungwoo Lyu<sup>1,2</sup></span>, <span>Selina Sung<sup>1</sup></span>, <span>Junjie Hu<sup>1</sup></span>
       </div>
@@ -156,166 +156,175 @@
   </div>
 
 
-    <h2>The Problem with Prompt-Level Safety Tests</h2>
+  <h2>The Problem with Isolated Safety Tests</h2>
 
-    <p>Most AI safety tests ask a prompt-level question: given this prompt, did the model respond safely? That works for obvious cases, but dual-use requests can pose a new challenge.</p>
+    <p>Most AI safety tests ask a prompt-level question: given this prompt, did the model respond safely? That works for obvious cases, but dual-use requests pose a harder challenge.</p>
 
-    <p>Take a cybersecurity question. The same technical knowledge could help an engineer secure a system or help an attacker compromise one. The same is true in privacy, chemistry, finance, procurement, and many other domains. The task may be the same, but the appropriate answer changes depending on what the user appears to be trying to do.</p>
+    <p>Take a cybersecurity question. The same technical knowledge could help an engineer secure a system or help an attacker compromise one. The same is true in privacy, chemistry, finance, procurement, and many other domains. The underlying capability may be the same, but the appropriate answer changes depending on what the user appears to be trying to do.</p>
 
-    <p>That is the motivation for safe completion. The model should not simply decide whether a topic is risky. It should choose the right response mode: full assistance, bounded assistance, safer reframing, or refusal.</p>
+    <p>That is the motivation for safe completion. A model should not simply decide whether a topic is risky or whether to comply or refuse. It should provide useful assistance when appropriate while constraining, reframing, or refusing assistance that could enable harm.</p>
 
-    <p>Evaluating that requires separating two things that are often tangled together: <b>what task the user is asking about and why they appear to be asking</b>. If both change at once, we cannot tell what drove the model’s behavior.</p>
+    <p>Evaluating that requires separating two things that are often tangled together: <b>what task the user is asking about and why they appear to be asking</b>. If both change at once, we cannot tell what drove the model's behavior.</p>
 
-    <p>That is the weakness of ordinary prompt-level evaluations. Suppose a model answers one cybersecurity prompt and refuses another. That may look like intent calibration. But if the prompts differ in task, detail, wording, or obviousness of harm, the comparison is ambiguous. The model may be reacting to surface cues rather than intent.</p>
+    <p>Suppose a model answers one cybersecurity prompt and refuses another. That may look like intent calibration. But if the prompts also differ in task, specificity, difficulty, or writing style, the comparison is ambiguous. The model may be reacting to those differences rather than to the intended use of the requested information.</p>
 
-    <p><i>OpenSafeIntent</i> is built around this attribution problem. It keeps the underlying task fixed and varies the apparent intent. Each prompt-set contains benign, dual-use, and malicious versions of the same task. This lets the benchmark ask the cleaner question: when the capability stays the same but intent changes, does the model shift from full help, to bounded help, to refusal in the right way?</p>
-
-
+    <p><i>OpenSafeIntent</i> is built around this attribution problem. It keeps the underlying task as fixed as possible while varying the apparent intent. Each prompt-set contains benign, dual-use, and malicious versions of the same task. This lets us ask a cleaner question: <b>when the capability stays the same but its intended use changes, can the model remain safe while preserving useful assistance where appropriate?</b></p>
 
 
-    <h2>OpenSafeIntent’s Core Idea: Hold the Task Fixed, Vary the Intent</h2>
+  <h2>OpenSafeIntent’s Core Idea: Hold the Task Fixed, Vary the Intent</h2>
 
-    <p>OpenSafeIntent contains around 800 prompts spread across 115 prompt-sets. Each prompt-set: contains three versions of a similar underlying task, rewritten with benign, dual-use, and malicious intent.</p>
+    <p>OpenSafeIntent contains 4,900 prompts across 700 prompt-sets. Each prompt-set is built around a shared underlying task and contains benign, dual-use, and malicious variants matched as closely as possible in task type, specificity, and complexity.</p>
 
     <figure>
     <img src="1-example-datapoint.png" alt="Datapoint example." style="width:75%;">
     <figcaption>Figure 1. Structure of an OpenSafeIntent prompt-set.</figcaption>
     </figure>
 
-    <p>OpenSafeIntent also metadata on harm domain and task type (kind of request made, irrespective of intent), and adds paraphrases of each dual-use prompt to test whether this behavior is stable under small wording changes.</p>
+    <p>This example shows what we mean by <b>dual-use</b>. All three prompts involve the same underlying task: working with a certificate of authenticity for a luxury handbag. In the benign version, the user is trying to verify whether a certificate is genuine. In the malicious version, the user explicitly wants help making a fake certificate look convincing.</p>
+
+    <p>The dual-use version sits between these two. The request itself does not reveal whether the user is verifying a real certificate or studying its features in order to reproduce one. Both uses are plausible, and a detailed answer could help with either. The model therefore has to do more than recognize the topic: it has to decide how much assistance can be given safely when the user's intent is ambiguous.</p>
+
+    <p>Each prompt-set also includes metadata describing its harm domain and task type: the form of assistance being requested, independent of intent. For the dual-use variant, OpenSafeIntent additionally provides four paraphrases, along with a plausible benign use and misuse risk, allowing us to test whether model behavior remains stable under small changes in wording.</p>
 
 
-    <h2>Benchmarking Intent-Calibrated Safe Completion</h2>
+  <h2>Benchmarking Intent-Calibrated Safe Completion</h2>
 
-    <h3>Triplet Safety reveals Hidden Failures</h3>
+    <h3>Models Fail in Different Ways Across the Same Task</h3>
 
-    <p>A model can look safe on average and still fail the cases that matter. Mean Safety asks: across all prompts, how often was the model safe? Triplet Safety asks a tougher question: for the same underlying task, did the model stay safe across the benign, dual-use, and malicious versions? Figure 2 shows that models that look similar under Mean Safety can separate clearly once evaluated at the prompt-set level.</p>
+      <p>Safe completion has two requirements. A model should remain safe across the benign, dual-use, and malicious versions of the same task, while still providing useful assistance on the benign and dual-use requests.</p>
 
-    <figure>
-    <img src="2-safety_results_bar.png" alt="Safety results." style="width:75%;">
-    <figcaption>Figure 2. Mean and Triplet Safety across models.</figcaption>
-    </figure>
+      <p>We measure these separately with <b>Triplet Safety</b> and <b>Worst-Case Utility</b>. Triplet Safety asks whether all three responses in a prompt-set are safe. Worst-Case Utility looks at the benign and dual-use responses and takes the less useful of the two.</p>
 
-    <h3>The Utility Bottleneck Is Dual-Use Behavior</h3>
+      <figure>
+      <img src="2-triplet-safety-vs-utility.png" alt="Triplet Safety versus Worst-Case Utility." style="width:65%;">
+      <figcaption>Figure 2. Triplet Safety versus Worst-Case Utility across models.</figcaption>
+      </figure>
 
-    <p>Safety is only half the benchmark. We define Utility as safety-gated helpfulness. Table 1 shows that utility on this benchmark is far from saturated.</p>
+      <p>The two metrics reveal different model behaviors. Some models are relatively safe across the full intent range but less useful on benign or dual-use requests. Others preserve useful assistance but fail safety somewhere in the prompt-set. Models with similar overall performance can therefore have quite different weaknesses.</p>
 
-    <p>But the more important clue is the relationship between Worst-Case Utility and Dual-Use Utility. Worst-Case Utility looks only at the benign and dual-use prompts, then takes the weaker of the two. Its average is 0.44, close to the average Dual-Use Utility of 0.48. This indicates that Benign utility is not the problem, Dual-Use utility is.</p>
+    <h3>Where Do Safety Failures Occur?</h3>
 
-    <p>Additionally, when responses are safe for both the benign and dual-use versions, the utility drop from benign to dual-use is only 0.04. So the main loss is not that safe dual-use answers are much less helpful. The loss comes when the model slips into unsafe help and gets zero utility.</p>
+      <p>Triplet Safety tells us whether a prompt-set contains an unsafe response, but not where that failure occurs. Looking at the full safety pattern across the three variants gives a more detailed picture.</p>
 
-    <table class="table">
-    <caption>Table 1. Utility metrics across 20 models.</caption>
-    <thead>
-      <tr>
-        <th scope="col"></th>
-        <th scope="col">Average</th>
-        <th scope="col">Strongest Model</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <th scope="row">Mean Utility</th>
-        <td>42%</td>
-        <td>56%</td>
-      </tr>
-      <tr>
-        <th scope="row">Worst-Case Utility</th>
-        <td>44%</td>
-        <td>62%</td>
-      </tr>
-      <tr>
-        <th scope="row">Dual Use Utility</th>
-        <td>48%</td>
-        <td>63%</td>
-      </tr>
-    </tbody>
-  </table>
+      <p>Averaged across models, 40.1% of prompt-sets are safe on all three variants. Another 24.3% fail only on the dual-use prompt, 19.7% fail only on the malicious prompt, and 12.0% fail on both. So similar Triplet Safety scores can hide different failure profiles across the benign–dual-use–malicious transition.</p>
+
+    <h3>Intent-Calibrated Utility Measures the Joint Objective</h3>
+
+      <p>Ultimately, safe completion requires safety and usefulness to hold together on the same prompt-set. We capture this with <b>Intent-Calibrated Utility (ICU)</b>. A prompt-set receives zero ICU if any of its three responses is unsafe. Otherwise, its score is determined by the less useful of the benign and dual-use responses.</p>
+
+      <p>Performance remains low across the 20 models we evaluate. The average ICU is 0.24, and even the strongest model reaches only 0.47. This means that current models rarely combine safety across the full intent range with useful assistance on the same underlying task.</p>
+
+    <h3>Some Tasks Are Much Harder Than Others</h3>
+
+      <p>ICU also varies substantially by task type and harm domain. Explanation tasks are the hardest on average, while Planning and Procedure performs better. Across harm domains, Privacy and Data Misuse is particularly difficult, while Hazardous Agent Use performs better on average.</p>
+
+      <figure>
+      <img src="3-stratified-icu.png" alt="ICU by task type and harm domain." style="width:60%;">
+      <figcaption>Figure 3. Intent-Calibrated Utility by task type and harm domain, averaged across models.</figcaption>
+      </figure>
+
+      <p>This shows that safe completion is not a single model-wide capability. Performance depends both on what capability is involved and on what kind of assistance the user is asking for.</p>
 
 
   <h2>How do models fail on dual-use prompts?</h2>
 
-  <h3>“High-Level” Is Not the Same as Safe</h3>
+    <p>Dual-use prompts are difficult because the model cannot simply decide whether to answer or refuse. The request may have a legitimate use, but answering it in the wrong way can still enable harm. Our analysis points to three recurring problems.</p>
 
-  <p>A common strategy for dual-use prompts is to answer “at a high level”: avoid step-by-step instructions, but still discuss the risky topic in general terms.</p>
+    <h3>“High-Level” Is Not the Same as Safe</h3>
 
-  <p>OpenSafeIntent shows that this is unreliable. High-level answers can still preserve the dangerous frame by explaining mechanisms, weak points, or strategic tradeoffs.</p>
+    <p>A common strategy for dual-use requests is to stay on the original topic but keep the answer high-level: avoiding detailed procedures or step-by-step instructions. That sounds safer, but our results show that it is not a very reliable boundary.</p>
 
-  <p>Table 2 makes the point sharply. High-level on-topic answers are judged unsafe 58.14% of the time, even slightly more often than direct answers to the original request (52.06%). By contrast, concrete answers after safe reframing are unsafe only 18.65% of the time. Thus, the strategy is not “answer vaguely.” It is “reframe the task, then answer concretely.”</p>
+    <p>We group dual-use responses into several assistance modes. A2 responses stay on the original task but answer at a high level. A3 responses first reframe the request toward a safer task, then provide concrete assistance. A4 responses directly answer the original request.</p>
 
     <table class="table">
-    <caption>Table 2. Assistance-mode distribution and Conditional unsafe rate.</caption>
+    <caption>Table 2. Response modes on dual-use prompts.</caption>
     <thead>
       <tr>
-        <th scope="col">Type of Answer</th>
-        <th scope="col">% of Unsafe Responses</th>
+        <th scope="col">Response Mode</th>
+        <th scope="col">Share of Responses</th>
+        <th scope="col">Unsafe Rate</th>
+        <th scope="col">Helpfulness When Safe</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <th scope="row">High Level</th>
-        <td>58.14</td>
+        <th scope="row">High-level, same task (A2)</th>
+        <td>22.7%</td>
+        <td>54.3%</td>
+        <td>0.71</td>
       </tr>
       <tr>
-        <th scope="row">Task reframing</th>
-        <td>18.65</td>
+        <th scope="row">Concrete help after reframing (A3)</th>
+        <td>40.9%</td>
+        <td>18.9%</td>
+        <td>0.76</td>
       </tr>
       <tr>
-        <th scope="row">Detailed</th>
-        <td>52.06</td>
+        <th scope="row">Direct answer to original task (A4)</th>
+        <td>29.3%</td>
+        <td>52.7%</td>
+        <td>0.77</td>
       </tr>
     </tbody>
-  </table>
+    </table>
 
-   <h3>Small Wording Changes Can Flip Safety Behavior</h3>
+    <p>Surprisingly, “high-level” does not automatically mean safe. An answer can avoid step-by-step instructions and still reveal useful mechanisms, weak points, or strategic information that makes misuse easier. Reframing, in contrast, is more promising. Instead of staying on the risky task and merely giving less detail, the model shifts toward a safer version of the task and answers that concretely. When those responses are safe, they are still comparably useful.</p>
 
-   <p>OpenSafeIntent also tests whether models are stable under paraphrase. For each dual-use prompt, the benchmark includes several alternate phrasings with the same intended ambiguity.</p>
-
-   <p>Figure 3 shows that this is a real weakness. On average, only 53.24% of dual-use paraphrase sets are stable-safe. Another 25.37% show safety flips, where some phrasings get safe responses and others get unsafe ones. The remaining 21.39% are stable-unsafe.</p>
-
-   <p>This matters because users do not write benchmark-perfect prompts. If small wording changes can move a model across the safety boundary, then the model has not really learned a stable policy for the underlying request. It has learned something more brittle: a response pattern sensitive to phrasing.</p>
-
-   <figure>
-   <img src="3-paraphrase_variance.jpg" alt="Paraphrase variance." style="width:75%;">
-   <figcaption>Figure 3. Share of dual-use prompt sets where paraphrases are always safe, always unsafe, or flip between safe and unsafe responses.</figcaption>
-   </figure>
-
-  <h3>Unsafe Answers Have Two Failure Modes</h3>
-
-  <p>We also ask why unsafe dual-use answers happen. One reason is a detection failure: the model does not recognize that the request needs limits, so it gives unrestricted help. Another is a policy-execution failure: the model recognizes that the answer should be constrained or refused, but still leaks unsafe detail while generating the response.</p>
-
-    <figure>
-   <img src="4-intent_classification.jpg" alt="Paraphrase variance." style="width:75%;">
-   <figcaption>Figure 4. Detection Failure vs. Policy Execution Failure.</figcaption>
-   </figure>
-
-  <p>This distinction matters because the fixes are different. Detection failures call for better risk recognition; execution failures call for better control over safe-completion behavior. A single safety score hides that difference: two models may look similarly unsafe, but fail for very different reasons.</p>
-
-  <h2>What these Failures Tell Us</h2>
-
-  <p>Models do not simply answer everything or refuse everything. Many models sometimes constrain, reframe, or refuse. The problem is that these choices are unstable.</p>
-
-  <p>One important lesson is that safe completion is not just a matter of turning response detail up or down. They often call for different response modes. This helps explain why high-level answers are not reliably safe. A vague answer can still preserve the harmful frame of the request, while a more concrete answer can be safe if it redirects the task towards prevention.</p>
-
-  <p>The paraphrase and triplet results point to the same underlying issue. Models do not always bind their response mode to the right feature of the situation. They may react to wording, specificity, or obvious harmful cues instead of the role the answer would play for the user. That is why the same task can produce different safety behavior when the intent framing or phrasing changes.</p>
-
-  <p>The detection-versus-execution analysis adds another layer to this picture. Some unsafe answers happen because the model chooses the wrong mode from the start: it treats a risky dual-use request as if unrestricted help is appropriate. Others happen because the model appears to recognize that a constraint is needed, but fails to maintain that boundary while answering. So the problem is not only mode selection; it is also mode stability during generation.</p>
-
-  <p>The broader conclusion is that safe completion has at least two requirements: choosing the right kind of response, and carrying it through consistently. OpenSafeIntent’s findings suggest that current models are brittle on both.</p>
+    <p>So the takeaway is simple: safe completion is not just about how much detail to give. Often, the more important question is what task the model chooses to help with.</p>
 
 
-    <h2>TL;DR</h2>
-    <p>OpenSafeIntent is useful because it turns safe completion into a controlled test: same task, different intent, different required response.</p>
 
-    <p>Our main empirical lesson is that current models often roughly understand safe completion, but do not apply it reliably. They may look safe on average while failing one version of a matched prompt-set. They may answer a dual-use prompt safely in one wording and unsafely in another. They may give a “high-level” answer that still preserves the dangerous frame. And when they fail, it may be because they missed the risk entirely, or because they recognized the risk but could not maintain the boundary while answering.</p>
+    <h3>Small Wording Changes Can Flip Safety Behavior</h3>
 
-    <p>So the benchmark is not just measuring whether models are safe or helpful. It is measuring whether they can consistently choose and execute the right response mode: full help, bounded help, safer reframing, or refusal.</p>
+      <p>We also test whether dual-use behavior is stable under paraphrasing. Each dual-use request appears in five different phrasings that preserve the same meaning and ambiguity. Ideally, those versions should lead to roughly the same safety decision. In practice, they often do not: many prompt-sets switch between safe and unsafe responses depending only on how the request is worded.</p>
 
+      <figure>
+      <img src="4-paraphrase-stability.jpg" alt="Safety stability across dual-use paraphrases." style="width:75%;">
+      <figcaption>Figure 4. Safety behavior across paraphrases of the same dual-use request.</figcaption>
+      </figure>
+
+      <p>This points to a fairly brittle safety boundary. The model is not always responding to the underlying request in a stable way; small wording changes can be enough to push it across that boundary. We also find that the safe responses within these paraphrase sets are not unusually inconsistent in usefulness. The bigger issue is whether the model stays safe at all, not whether its safe answers vary dramatically in quality.</p>
+
+      <p>That matters because real users will not phrase the same request in one canonical way. A robust safe-completion policy should behave consistently across equivalent formulations, rather than depending heavily on surface wording.</p>
+
+
+    <h3>Unsafe Responses Can Fail in Different Ways</h3>
+
+      <p>When a model gives an unsafe answer to a dual-use prompt, what actually went wrong? One possibility is that it never recognized the need for any safety constraint. Another is that it can identify the right boundary when asked explicitly, but its original response did not stay within it. These are different failure modes, and they may call for different fixes.</p>
+
+      <p>To distinguish between them, we take the dual-use prompts where a model already produced an unsafe answer, show the model the original prompt again without its previous response, and ask what kind of response would be appropriate: unrestricted assistance, constrained assistance, or refusal. If it still chooses unrestricted help, we treat that as an explicit risk-recognition failure. If it instead says the request should have been constrained or refused, we call it a safety-judgment mismatch.</p>
+
+      <figure>
+      <img src="5-failure-modes.jpg" alt="Risk-recognition failures and safety-judgment mismatches." style="width:75%;">
+      <figcaption>Figure 5. Different failure patterns among unsafe dual-use responses.</figcaption>
+      </figure>
+
+      <p>Both patterns show up across the models, but in very different proportions. Some models often fail to recognize that an ambiguous request needs any safety boundary at all. Others are able to identify that boundary when asked explicitly, yet their original response still crossed it. These patterns also do not line up neatly with overall safety rates, so two models with similar levels of unsafe behavior can still be failing for quite different reasons.</p>
+
+      <p>The broader point is that “the model gave an unsafe answer” is not a complete diagnosis. Improving safe completion may require better risk recognition for some models, while for others the bigger challenge is producing responses that stay consistent with the safety judgment they can articulate under explicit evaluation.</p>
+
+
+
+  <h2>What These Failures Tell Us</h2>
+
+<p>Taken together, the results point to a broader problem than simple over-refusal or over-compliance. Models often know how to produce safe completions in some cases, but they do not apply that behavior consistently across closely related requests. The same underlying task can be handled well under one intent framing and poorly under another, or safely under one wording and unsafely under a paraphrase.</p>
+
+<p>The dual-use analyses help explain why. Safe completion is not just a matter of turning the level of detail up or down. A high-level answer can still preserve the risky part of the original request, while a concrete answer can be safe if the model first reframes the task. And when unsafe answers do occur, they do not all reflect the same problem: some models fail to recognize that a boundary is needed, while others can identify an appropriate boundary when asked explicitly but do not produce an answer consistent with it.</p>
+
+<p>The broader lesson is that safe completion requires more than getting individual prompts right. Models need to choose an appropriate kind of assistance as intent changes, and they need to do so reliably across nearby versions of the same request. OpenSafeIntent is designed to make those failures visible by evaluating the whole intent transition rather than isolated prompts.</p>
+
+  <h2>TL;DR</h2>
+
+  <p>OpenSafeIntent tests safe completion in a controlled setting: the underlying task stays the same while the apparent intent changes from benign to dual-use to malicious. Across 700 prompt-sets and 20 models, current systems still struggle to keep safety and useful assistance together across the full intent range.</p>
+
+  <p>The failures are not all the same. Models can be safe on average while failing one member of a matched prompt-set, switch between safe and unsafe behavior under small wording changes, or give high-level answers that still preserve harmful information. Reframing a risky request toward a safer task appears much more reliable than simply answering the original request more vaguely.</p>
+
+  <p>The main takeaway is that safe completion should be evaluated over families of related requests, not just isolated prompts. The important question is not only whether a model can be safe or helpful, but whether it can choose the right kind of help consistently as intent changes.</p>
 
   <h4 align='center'>Thanks for reading!</h4>
 
   <footer>
-    © 2025 Rheeya Uppaal· <a href="/">Back to main site</a>
+    © 2026 Rheeya Uppaal· <a href="/">Back to main site</a>
   </footer>
 
 
